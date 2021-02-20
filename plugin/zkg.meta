@@ -1,0 +1,7 @@
+[package]
+script_dir = scripts
+build_command = ./configure && cd build && make
+test_command = cd testing && btest -c btest.cfg
+summary = TODO: A summary of @NAME@ in one line
+description = TODO: A more detailed description of @NAME@.
+    It can span multiple lines, with this indentation.

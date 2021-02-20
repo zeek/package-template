@@ -1,0 +1,14 @@
+module @NS@::@NAME@;
+
+%%{
+
+// This block is for required includes, declarations, and helper functions.
+
+%%}
+
+# Built-in function implementations follow here. For help on these, see
+#
+# function foobar%(%): string
+# %{
+#	// ...
+# %}
