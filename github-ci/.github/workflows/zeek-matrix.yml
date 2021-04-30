@@ -1,4 +1,4 @@
-name: Test & install across Zeek versions
+name: Zeek matrix tests
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Test & install with Zeek nightly build
+name: Zeek nightly build
 
 on:
   schedule:
@@ -8,13 +8,9 @@ jobs:
   test-nightly:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-        with:
-          # We need the git tags in order to install the latest
-          # one, as zkg would do if using a package source:
-          fetch-depth: 0
       - uses: zeek/action-zkg-install@v1
         with:
+          pkg: ${{ github.server_url }}/${{ github.repository }}
           zeek_version: 'zeek-nightly'
       - uses: actions/upload-artifact@v2
         if: failure()
