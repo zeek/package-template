@@ -1,9 +1,9 @@
 #include "config.h"
 #include "Plugin.h"
 
-namespace plugin { namespace @NS_UNDERSCORE@@NAME@ { Plugin plugin; } }
+namespace zeek::plugin::@NS_UNDERSCORE@@NAME@ { Plugin plugin; }
 
-using namespace plugin::@NS_UNDERSCORE@@NAME@;
+using namespace zeek::plugin::@NS_UNDERSCORE@@NAME@;
 
 zeek::plugin::Configuration Plugin::Configure()
 	{

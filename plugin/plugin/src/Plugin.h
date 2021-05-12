@@ -2,7 +2,7 @@
 
 #include <zeek/plugin/Plugin.h>
 
-namespace plugin {
+namespace zeek::plugin {
 namespace @NS_UNDERSCORE@@NAME@ {
 
 class Plugin : public zeek::plugin::Plugin
