@@ -22,6 +22,12 @@ functional btest setup. You can add the following optional features:
   (where you'll define log streams, handle runtime events, etc)
   directly in the toplevel `scripts` folder.
 
+- `license`: this feature lets you choose a license for your package.  Available
+  choices include the Apache 2.0, BSD 2- and 3-clause, MIT, and Mozilla 2.0
+  licenses. You're free to use others; these are just the ones most commonly
+  used for Zeek packages.  The resulting license gets placed into `COPYING` at
+  the package's toplevel.
+
 - `github-ci`: this feature adds two
   [Github Action workflows](https://docs.github.com/en/actions).
   The first tests the package across our triplet of supported
