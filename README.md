@@ -40,16 +40,23 @@ functional btest setup. You can add the following optional features:
 
 All packages require Zeek 4 or newer.
 
-## User variables
+## Example
 
-Zeek package templates support `zkg`'s user variables for
-parameterization. This template is currently quite basic and only
-requires two input variables:
+To create scripting-only Zeek package with a 3-clause BSD license:
 
-- `name`: a name for the new package, such as `MyPackage`
+```
+$ zkg create --features license --packagedir newpackage
+"package-template" requires a "name" value (the name of the package, e.g. "FooBar"):
+name: FooBar
+"package-template" requires a "author" value (your name and email address):
+author: My Name <my.name@example.com>
+"package-template" requires a "license" value (one of apache, bsd-2, bsd-3, mit, mpl-2):
+license: bsd-3
 
-- `namespace`: a namespace for the package, such as `MyOrg`. This is
-  required only when using the plugin feature.
+$ cd newpackage
+$ ls
+COPYING  README  scripts/  testing/  zkg.meta
+```
 
 ## Status
 
