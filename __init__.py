@@ -16,7 +16,7 @@ class Package(zeekpkg.template.Package):
                 'package requires a name')
 
         if not tmpl.lookup_param('name').isalnum():
-            raise InputError(
+            raise zeekpkg.template.InputError(
                 'package name "{}" must be alphanumeric'
                 .format(tmpl.lookup_param('name')))
 
