@@ -22,6 +22,12 @@ functional btest setup. You can add the following optional features:
   (where you'll define log streams, handle runtime events, etc)
   directly in the toplevel `scripts` folder.
 
+- `license`: this feature lets you choose a license for your package.  Available
+  choices include the Apache 2.0, BSD 2- and 3-clause, MIT, and Mozilla 2.0
+  licenses. You're free to use others; these are just the ones most commonly
+  used for Zeek packages.  The resulting license gets placed into `COPYING` at
+  the package's toplevel.
+
 - `github-ci`: this feature adds two
   [Github Action workflows](https://docs.github.com/en/actions).
   The first tests the package across our triplet of supported
@@ -34,16 +40,23 @@ functional btest setup. You can add the following optional features:
 
 All packages require Zeek 4 or newer.
 
-## User variables
+## Example
 
-Zeek package templates support `zkg`'s user variables for
-parameterization. This template is currently quite basic and only
-requires two input variables:
+To create scripting-only Zeek package with a 3-clause BSD license:
 
-- `name`: a name for the new package, such as `MyPackage`
+```
+$ zkg create --features license --packagedir newpackage
+"package-template" requires a "name" value (the name of the package, e.g. "FooBar"):
+name: FooBar
+"package-template" requires a "author" value (your name and email address):
+author: My Name <my.name@example.com>
+"package-template" requires a "license" value (one of apache, bsd-2, bsd-3, mit, mpl-2):
+license: bsd-3
 
-- `namespace`: a namespace for the package, such as `MyOrg`. This is
-  required only when using the plugin feature.
+$ cd newpackage
+$ ls
+COPYING  README  scripts/  testing/  zkg.meta
+```
 
 ## Status
 
