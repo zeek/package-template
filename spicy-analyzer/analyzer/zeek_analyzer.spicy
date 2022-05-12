@@ -1,0 +1,15 @@
+# This file sets up protocol confirmation/rejection for analyzers.
+
+module Zeek_@ns@;
+
+import @ns@;
+import zeek;
+
+# TODO: For DPD, protocol analyzers should confirm or reject a protocol.
+# on @ns@::@name@::%done {
+#     zeek::confirm_protocol();
+# }
+#
+# on @ns@::@name@::%error {
+#     zeek::reject_protocol("error while parsing @name@ record");
+# }
