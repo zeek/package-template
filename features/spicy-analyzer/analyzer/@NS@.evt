@@ -1,0 +1,25 @@
+# TODO: Adjust here whether this is a file, tcp or ucp analyzer,
+# and the ports the analyzers work on. See
+# https://docs.zeek.org/projects/spicy/en/latest/zeek.html#interface-definitions-evt-files
+# for the DSL used here. Below, the active analyzer declaration defines a protocol analyzer.
+#
+# A file analyzer would be define like this:
+#
+#     file analyzer spicy::ZIP:
+#         parse with ZIP::Archive,
+#         mime-type application/zip;
+#
+# A packet analyzer would look like this:
+
+#     packet analyzer spicy::RawLayer:
+#         parse with Raw Layer::Packet;
+
+protocol analyzer spicy::@name@ over TCP:
+    parse with @ns@::@name@,
+    port 8080/tcp;
+
+import @ns@;
+import Zeek_@ns@;
+
+# TODO: Connect Spicy-side events with Zeek-side events.
+on @ns@::@name@ -> event @name@::message($conn, $is_orig, self.payload);

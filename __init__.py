@@ -7,6 +7,7 @@ for details.
 """
 from datetime import date
 import os
+import textwrap
 
 import git
 
@@ -104,6 +105,58 @@ class GithubCi(zeekpkg.template.Feature):
         return os.path.join('features', self.name())
 
 
+class SpicyAnalyzer(zeekpkg.template.Feature):
+    """Feature for a Spicy-based analyzer."""
+    def name(self):
+        return 'spicy-analyzer'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
+
+    def needed_user_vars(self):
+        """Specify required user variables."""
+        return ['name', 'namespace']
+
+    def validate(self, tmpl):
+        """Validate feature prerequisites."""
+        for parameter in ['name', 'ns']:
+            value = tmpl.lookup_param(parameter)
+            if not value or len(value) == 0:
+                raise zeekpkg.template.InputError(
+                        'package requires a {}'.format(parameter))
+
+    def instantiate(self, tmpl):
+        super().instantiate(tmpl)
+
+        def pkg_file(*name):
+            p = os.path.join(self._packagedir, *name)
+            assert os.path.exists(p)
+            return p
+
+        # Manually merge Spicy analyzer-specific changes to `zkg.meta`.
+        with open(pkg_file('zkg.meta'), 'ab') as f:
+            # Add a build command.
+            f.write(b'build_command = mkdir -p build && cd build && cmake .. && cmake --build .\n')
+
+        # Manually merge Spicy analyzer-specific changes to `testing/btest.cfg`.
+        with open(pkg_file('testing', 'btest.cfg'), 'ab') as f:
+            f.write(bytes(textwrap.dedent('''\
+                DIST=%(testbase)s/..
+                # Set compilation-related variables to well-defined state.
+                CC=
+                CXX=
+                CFLAGS=
+                CPPFLAGS=
+                CXXFLAGS=
+                LDFLAGS=
+                DYLDFLAGS=
+                '''), 'ascii'))
+
+        # Manually merge Spicy analyzer-specific changes to `scripts/__load__.zeek`.
+        with open(pkg_file('scripts', '__load__.zeek'), 'ab') as f:
+            f.write(b'@load-sigs ./dpd.sig\n')
+
+
 class Template(zeekpkg.template.Template):
     def define_user_vars(self):
         # Try to determine user name and email via the git config. This relies
@@ -152,4 +205,4 @@ class Template(zeekpkg.template.Template):
         return Package()
 
     def features(self):
-        return [Plugin(), License(), GithubCi()]
+        return [Plugin(), License(), GithubCi(), SpicyAnalyzer()]
