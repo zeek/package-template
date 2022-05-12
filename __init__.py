@@ -65,7 +65,7 @@ class License(zeekpkg.template.Feature):
         return sorted(os.listdir(licdir))
 
     def contentdir(self):
-        return 'license'
+        return 'license-feature'
 
     def needed_user_vars(self):
         return ['author', 'license']
