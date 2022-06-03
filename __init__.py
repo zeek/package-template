@@ -19,8 +19,11 @@ import zeekpkg.uservar # pylint: disable=import-error
 TEMPLATE_API_VERSION = '1.0.0'
 
 class Package(zeekpkg.template.Package):
-    def contentdir(self):
+    def name(self):
         return 'package'
+
+    def contentdir(self):
+        return os.path.join(self.name())
 
     def needed_user_vars(self):
         return ['name']
@@ -42,8 +45,11 @@ class Package(zeekpkg.template.Package):
 
 
 class Plugin(zeekpkg.template.Feature):
-    def contentdir(self):
+    def name(self):
         return 'plugin'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
     def needed_user_vars(self):
         return ['namespace']
@@ -64,8 +70,11 @@ class License(zeekpkg.template.Feature):
         licdir = os.path.join(tmpl.templatedir(), self.contentdir())
         return sorted(os.listdir(licdir))
 
+    def name(self):
+        return 'license'
+
     def contentdir(self):
-        return 'license-feature'
+        return os.path.join('features', self.name())
 
     def needed_user_vars(self):
         return ['author', 'license']
@@ -92,15 +101,21 @@ class License(zeekpkg.template.Feature):
 
 
 class GithubCi(zeekpkg.template.Feature):
-    def contentdir(self):
+    def name(self):
         return 'github-ci'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
 
 class SpicyAnalyzer(zeekpkg.template.Feature):
     """Feature for a Spicy-based analyzer."""
 
-    def contentdir(self):
+    def name(self):
         return 'spicy-analyzer'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
     def needed_user_vars(self):
         """Specify required user variables."""
