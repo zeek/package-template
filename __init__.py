@@ -141,7 +141,12 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
         # Manually merge Spicy analyzer-specific changes to `zkg.meta`.
         with open(pkg_file('zkg.meta'), 'ab') as f:
             # Add a build command.
-            f.write(b'build_command = mkdir -p build && cd build && cmake .. && cmake --build .\n')
+            #
+            # NOTE: For backwards compatibility with <zkg-2.8.0 which did not
+            # inject binary paths of installed packages into `PATH`, we allow
+            # as a fallback a `spicyz` path inferred from `zkg`'s directory
+            # structure.
+            f.write(b'build_command = mkdir -p build && cd build && SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && cmake --build .\n')
 
         # Manually merge Spicy analyzer-specific changes to `testing/btest.cfg`.
         cfg = pkg_file('testing', 'btest.cfg')
