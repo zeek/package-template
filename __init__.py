@@ -34,10 +34,10 @@ class Package(zeekpkg.template.Package):
                 'package name "{}" must be alphanumeric'
                 .format(tmpl.lookup_param('name')))
 
-        if tmpl.lookup_param('namespace') and not tmpl.lookup_param('namespace').isalnum():
+        if tmpl.lookup_param('ns') and not tmpl.lookup_param('ns').isalnum():
             raise zeekpkg.template.InputError(
                 'package namespace "{}" must be alphanumeric'
-                .format(tmpl.lookup_param('namespace')))
+                .format(tmpl.lookup_param('ns')))
 
 
 class Plugin(zeekpkg.template.Feature):
