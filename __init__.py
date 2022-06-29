@@ -156,6 +156,14 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
             f.write(b'build_command = mkdir -p build && cd build && SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && cmake --build .\n')
 
         # Manually merge Spicy analyzer-specific changes to `testing/btest.cfg`.
+        with fileinput.FileInput(pkg_file('testing', 'btest.cfg'), inplace = True) as f:
+            for line in f:
+                # Spicy-analyzer tests are in the directory `testing/@NS@`; add it to `TestDirs`.
+                if line.startswith('TestDirs'):
+                    print(' '.join((line.rstrip(), tmpl.lookup_param('ns'))))
+                else:
+                    print(line, end ='')
+
         with open(pkg_file('testing', 'btest.cfg'), 'ab') as f:
             f.write(bytes(textwrap.dedent('''\
                 DIST=%(testbase)s/..
