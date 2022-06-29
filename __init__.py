@@ -177,32 +177,6 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
         with open(pkg_file('scripts', '__load__.zeek'), 'ab') as f:
             f.write(b'@load-sigs ./dpd.sig\n')
 
-        # Rename files with generic `*analyzer.*` names to namespace-specific names.
-        def rename_analyzer_file(from_, to_):
-            # Rename the file.
-            p = pkg_file(os.path.join('analyzer', from_))
-            assert os.path.exists(p)  # We must be working on a file in the `analyzer/` folder.
-            os.rename(p, os.path.join(os.path.dirname(p), to_))
-
-            # Update references to the name anywhere.
-            for dirpath, _, filenames in os.walk(self._packagedir):
-                for fname in filenames:
-                    try:
-                        with fileinput.FileInput(os.path.join(dirpath, fname), inplace=True) as f:
-                            for line in f:
-                                line = line.replace(from_, to_)
-                                print(line, end='')
-                    except UnicodeDecodeError:
-                        # Ignore files which do not contain valid unicode.This assumes
-                        # that all source files in the feature contain valid unicode.
-                        pass
-
-                    pass
-
-        rename_analyzer_file('zeek_analyzer.spicy', 'zeek_{ns}.spicy'.format(ns=tmpl.lookup_param('ns')))
-        rename_analyzer_file('analyzer.spicy', '{ns}.spicy'.format(ns=tmpl.lookup_param('ns')))
-        rename_analyzer_file('analyzer.evt', '{ns}.evt'.format(ns=tmpl.lookup_param('ns')))
-
 
 class Template(zeekpkg.template.Template):
     def define_user_vars(self):
