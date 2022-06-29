@@ -30,6 +30,13 @@ class Package(zeekpkg.template.Package):
         return ['name']
 
     def validate(self, tmpl):
+        # One cannot currently combine a Spicy analyzer and a general-purpose
+        # plugin via features. Users who need this should start from either and
+        # generalize as needed.
+        if any(isinstance(feature, Plugin) for feature in self._features):
+            raise zeekpkg.template.InputError(
+                'the "plugin" and "spicy-analyzer" features are mutually exclusive')
+
         if not tmpl.lookup_param('name'):
             raise zeekpkg.template.InputError(
                 'package requires a name')
