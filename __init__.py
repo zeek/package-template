@@ -149,20 +149,9 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
             f.write(b'build_command = mkdir -p build && cd build && SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && cmake --build .\n')
 
         # Manually merge Spicy analyzer-specific changes to `testing/btest.cfg`.
-        cfg = pkg_file('testing', 'btest.cfg')
-        with open(cfg, 'rb') as f:
-            data = f.readlines()
-        with open(cfg, 'wb') as f:
-            for line in data:
-                # Patch in support for `analyzer` testdir.
-                if line.startswith(b'TestDirs'):
-                    line = bytearray(line.rstrip())
-                    line.extend(b' analyzer\n')
-                f.write(line)
-
-            f.write(b'DIST=%(testbase)s/..\n')
-
-            f.write(bytes(textwrap.dedent('''
+        with open(pkg_file('testing', 'btest.cfg'), 'ab') as f:
+            f.write(bytes(textwrap.dedent('''\
+                DIST=%(testbase)s/..
                 # Set compilation-related variables to well-defined state.
                 CC=
                 CXX=
