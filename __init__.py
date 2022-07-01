@@ -41,8 +41,11 @@ class Package(zeekpkg.template.Package):
 
 
 class Plugin(zeekpkg.template.Feature):
-    def contentdir(self):
+    def name(self):
         return 'plugin'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
     def needed_user_vars(self):
         return ['namespace']
@@ -59,13 +62,15 @@ class Plugin(zeekpkg.template.Feature):
 
 
 class License(zeekpkg.template.Feature):
+    def name(self):
+        return 'license'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
     def license_keys(self, tmpl):
         licdir = os.path.join(tmpl.templatedir(), self.contentdir())
         return sorted(os.listdir(licdir))
-
-    def contentdir(self):
-        return 'license'
 
     def needed_user_vars(self):
         return ['author', 'license']
@@ -92,8 +97,11 @@ class License(zeekpkg.template.Feature):
 
 
 class GithubCi(zeekpkg.template.Feature):
-    def contentdir(self):
+    def name(self):
         return 'github-ci'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
 
 class Template(zeekpkg.template.Template):
