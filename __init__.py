@@ -7,6 +7,7 @@ for details.
 """
 from datetime import date
 import os
+import textwrap
 
 import git
 
@@ -25,6 +26,21 @@ class Package(zeekpkg.template.Package):
         return ['name']
 
     def validate(self, tmpl):
+        # One cannot currently combine a Spicy analyzer and a general-purpose
+        # plugin via features. Users who need this should start from either and
+        # generalize as needed.
+        have_plugin, have_spicy_analyzer = False, False
+
+        for feature in self._features:
+            if isinstance(feature, Plugin):
+                have_plugin = True
+            if isinstance(feature, SpicyAnalyzer):
+                have_spicy_analyzer = True
+
+        if have_plugin and have_spicy_analyzer:
+            raise zeekpkg.template.InputError(
+                'the "plugin" and "spicy-analyzer" features are mutually exclusive')
+
         if not tmpl.lookup_param('name'):
             raise zeekpkg.template.InputError(
                 'package requires a name')
@@ -34,15 +50,18 @@ class Package(zeekpkg.template.Package):
                 'package name "{}" must be alphanumeric'
                 .format(tmpl.lookup_param('name')))
 
-        if tmpl.lookup_param('namespace') and not tmpl.lookup_param('namespace').isalnum():
+        if tmpl.lookup_param('ns') and not tmpl.lookup_param('ns').isalnum():
             raise zeekpkg.template.InputError(
                 'package namespace "{}" must be alphanumeric'
-                .format(tmpl.lookup_param('namespace')))
+                .format(tmpl.lookup_param('ns')))
 
 
 class Plugin(zeekpkg.template.Feature):
-    def contentdir(self):
+    def name(self):
         return 'plugin'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
     def needed_user_vars(self):
         return ['namespace']
@@ -59,13 +78,15 @@ class Plugin(zeekpkg.template.Feature):
 
 
 class License(zeekpkg.template.Feature):
+    def name(self):
+        return 'license'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
 
     def license_keys(self, tmpl):
         licdir = os.path.join(tmpl.templatedir(), self.contentdir())
         return sorted(os.listdir(licdir))
-
-    def contentdir(self):
-        return 'license'
 
     def needed_user_vars(self):
         return ['author', 'license']
@@ -92,8 +113,68 @@ class License(zeekpkg.template.Feature):
 
 
 class GithubCi(zeekpkg.template.Feature):
-    def contentdir(self):
+    def name(self):
         return 'github-ci'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
+
+
+class SpicyAnalyzer(zeekpkg.template.Feature):
+    """Feature for a Spicy-based analyzer."""
+    def name(self):
+        return 'spicy-analyzer'
+
+    def contentdir(self):
+        return os.path.join('features', self.name())
+
+    def needed_user_vars(self):
+        """Specify required user variables."""
+        return ['name', 'namespace']
+
+    def validate(self, tmpl):
+        """Validate feature prerequisites."""
+        for parameter in ['name', 'ns']:
+            value = tmpl.lookup_param(parameter)
+            if not value or len(value) == 0:
+                raise zeekpkg.template.InputError(
+                        'package requires a {}'.format(parameter))
+
+    def instantiate(self, tmpl):
+        super().instantiate(tmpl)
+
+        def pkg_file(*name):
+            p = os.path.join(self._packagedir, *name)
+            assert os.path.exists(p)
+            return p
+
+        # Manually merge Spicy analyzer-specific changes to `zkg.meta`.
+        with open(pkg_file('zkg.meta'), 'ab') as f:
+            # Add a build command.
+            #
+            # NOTE: For backwards compatibility with <zkg-2.8.0 which did not
+            # inject binary paths of installed packages into `PATH`, we allow
+            # as a fallback a `spicyz` path inferred from `zkg`'s directory
+            # structure.
+            f.write(b'build_command = mkdir -p build && cd build && SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && cmake --build .\n')
+
+        # Manually merge Spicy analyzer-specific changes to `testing/btest.cfg`.
+        with open(pkg_file('testing', 'btest.cfg'), 'ab') as f:
+            f.write(bytes(textwrap.dedent('''\
+                DIST=%(testbase)s/..
+                # Set compilation-related variables to well-defined state.
+                CC=
+                CXX=
+                CFLAGS=
+                CPPFLAGS=
+                CXXFLAGS=
+                LDFLAGS=
+                DYLDFLAGS=
+                '''), 'ascii'))
+
+        # Manually merge Spicy analyzer-specific changes to `scripts/__load__.zeek`.
+        with open(pkg_file('scripts', '__load__.zeek'), 'ab') as f:
+            f.write(b'@load-sigs ./dpd.sig\n')
 
 
 class Template(zeekpkg.template.Template):
@@ -144,4 +225,4 @@ class Template(zeekpkg.template.Template):
         return Package()
 
     def features(self):
-        return [Plugin(), License(), GithubCi()]
+        return [Plugin(), License(), GithubCi(), SpicyAnalyzer()]

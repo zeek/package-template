@@ -10,7 +10,7 @@ new Zeek packages.
 By default, the template provides a plain Zeek package with a
 functional btest setup. You can add the following optional features:
 
-- `plugin`: this feature adds plugin support to the new package. It
+- `plugin` adds plugin support to the new package. It
   includes a minimal, functional plugin that Zeek loads and shows in its
   `-N` output, with a testcase.
 
@@ -22,13 +22,21 @@ functional btest setup. You can add the following optional features:
   (where you'll define log streams, handle runtime events, etc)
   directly in the toplevel `scripts` folder.
 
-- `license`: this feature lets you choose a license for your package.  Available
+- `spicy-analyzer` adds a Spicy analyzer to the package. The feature relies on
+  two user variables: a namespace for the resulting module name, and a general
+  name for the parser. Make sure to read through the generated package for
+  remaining TODOs. This feature and `plugin` are mutually exclusive. For Zeek
+  5.0 and newer, the resulting package will work immediately; for older Zeek
+  versions please ensure you have the
+  [spicy-plugin](https://github.com/zeek/spicy-plugin) Zeek package installed.
+
+- `license` lets you choose a license for your package.  Available
   choices include the Apache 2.0, BSD 2- and 3-clause, MIT, and Mozilla 2.0
   licenses. You're free to use others; these are just the ones most commonly
   used for Zeek packages.  The resulting license gets placed into `COPYING` at
   the package's toplevel.
 
-- `github-ci`: this feature adds two
+- `github-ci` adds two
   [Github Action workflows](https://docs.github.com/en/actions).
   The first tests the package across our triplet of supported
   [binary packages](https://github.com/zeek/zeek/wiki/Binary-Packages) (the
@@ -38,7 +46,7 @@ functional btest setup. You can add the following optional features:
   Both rely on our
   [Github action for testing Zeek packages](https://github.com/zeek/action-zkg-install).
 
-All packages require Zeek 4 or newer.
+All packages require Zeek 4 or newer, and Zeek 5 is recommended.
 
 ## Example
 
