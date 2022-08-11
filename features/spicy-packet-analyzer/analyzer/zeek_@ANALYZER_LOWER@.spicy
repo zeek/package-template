@@ -1,0 +1,8 @@
+# Zeek-specific Spicy logic.
+
+module Zeek_@ANALYZER@;
+
+import @ANALYZER@;
+import zeek;
+
+# TODO: Add anything you need here.

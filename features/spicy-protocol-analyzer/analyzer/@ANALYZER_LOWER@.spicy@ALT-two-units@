@@ -1,0 +1,11 @@
+# TODO: Define your analyzer here.
+
+module @ANALYZER@;
+
+public type @UNIT_ORIG@ = unit {
+    payload: bytes &eod;
+};
+
+public type @UNIT_RESP@ = unit {
+    payload: bytes &eod;
+};

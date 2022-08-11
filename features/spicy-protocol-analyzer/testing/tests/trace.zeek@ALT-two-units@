@@ -1,0 +1,18 @@
+# @TEST-DOC: Test Zeek parsing a trace file through the @ANALYZER@ analyzer.
+#
+# @TEST-EXEC: zeek -Cr ${TRACES}/@PROTOCOL_LOWER@-port-12345.pcap ${PACKAGE} %INPUT >output
+# @TEST-EXEC: btest-diff output
+# @TEST-EXEC: btest-diff @ANALYZER_LOWER@.log
+
+# TODO: Adapt as suitable. The example only checks the output of the event
+# handlers.
+
+event @ANALYZER@::request(c: connection, is_orig: bool, payload: string)
+    {
+    print fmt("Testing @ANALYZER@: [request] %s %s", c$id, payload);
+    }
+
+event @ANALYZER@::reply(c: connection, is_orig: bool, payload: string)
+    {
+    print fmt("Testing @ANALYZER@: [reply] %s %s", c$id, payload);
+    }

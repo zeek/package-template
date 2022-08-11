@@ -22,13 +22,22 @@ functional btest setup. You can add the following optional features:
   (where you'll define log streams, handle runtime events, etc)
   directly in the toplevel `scripts` folder.
 
-- `spicy-analyzer` adds a Spicy analyzer to the package. The feature relies on
-  two user variables: a namespace for the resulting module name, and a general
-  name for the parser. Make sure to read through the generated package for
-  remaining TODOs. This feature and `plugin` are mutually exclusive. For Zeek
-  5.0 and newer, the resulting package will work immediately; for older Zeek
+- `spicy-file-analyzer`/`spicy-packet-analyzer`/`spicy-protocol-analyzer`
+  each add a Spicy analyzer to the package: either a file analyzer, or
+  a packet analyzer, or a protocol analyzer, respectively. They all
+  expect to receive one common user variable: `analyzer` specifies the
+  name of the analyzer (e.g., `HTTP`). Packet and file analyzers
+  further rely on the name of a top-level Spicy `unit` where to start
+  parsing their format. Protocol analyzers expect two separate units
+  instead, one for each direction (`unit_orig` and `unit_resp`; these
+  may be the same), as well as a `protocol` to specify whether it's a
+  TCP- or UDP-based protocol that's to be parsed. For all analyzers,
+  make sure to read through the generated package for remaining TODOs.
+  These features and `plugin` are mutually exclusive. For Zeek 5.0 and
+  newer, the resulting package will work immediately; for older Zeek
   versions please ensure you have the
-  [spicy-plugin](https://github.com/zeek/spicy-plugin) Zeek package installed.
+  [spicy-plugin](https://github.com/zeek/spicy-plugin) Zeek package
+  installed.
 
 - `license` lets you choose a license for your package.  Available
   choices include the Apache 2.0, BSD 2- and 3-clause, MIT, and Mozilla 2.0

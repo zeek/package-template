@@ -1,0 +1,20 @@
+# Set up protocol confirmation/rejection for analyzers, as well as any further
+# Zeek-specific analysis.
+
+module Zeek_@ANALYZER@;
+
+import @ANALYZER@;
+import zeek;
+
+# TODO: Protocol analyzers should confirm once they are reasonably sure that
+# they are indeed parsing the right protocol. Pick a unit that's a little bit
+# into the parsing process here.
+#
+# on @ANALYZER@::SUITABLE_UNIT {
+#     zeek::confirm_protocol();
+# }
+
+# Any error bubbling up to the top unit will trigger a protocol rejection.
+on @ANALYZER@::@UNIT@::%error {
+    zeek::reject_protocol("error while parsing @ANALYZER@");
+}

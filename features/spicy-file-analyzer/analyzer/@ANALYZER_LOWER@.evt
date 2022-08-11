@@ -1,0 +1,20 @@
+import @ANALYZER@;
+import Zeek_@ANALYZER@;
+
+# TODO: Adjust the MIME type below, which determines when the analyzer will be
+# activated. Keep in mind that Zeek identifies MIME types by "content sniffing"
+# through signatures. If Zeek doesn't have a signature for your file type, you
+# can add your own in `scripts/@ANALYZER_LOWER@.sig.`
+#
+# For more information on the the syntax below, see:
+#
+#   https://docs.zeek.org/projects/spicy/en/latest/zeek.html#interface-definitions-evt-files
+#
+file analyzer spicy::@ANALYZER@:
+    parse with @ANALYZER@::@UNIT@,
+    mime-type application/x-@ANALYZER_LOWER@;
+
+# TODO: Connect Spicy-side events with Zeek-side events. The example just
+# defines a simple example event that forwards the raw data (which in practice
+# you don't want to do!).
+on @ANALYZER@::@UNIT@ -> event @ANALYZER@::content($file, self.content);

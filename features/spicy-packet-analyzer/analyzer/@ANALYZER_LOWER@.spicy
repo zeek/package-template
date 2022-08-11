@@ -1,0 +1,19 @@
+# TODO: Define your analyzer here.
+
+module @ANALYZER@;
+
+import zeek;
+
+# TODO: Our example here models a simple example packet format of static size:
+# 19 payload bytes, followed by the protocol number for the next layer, for
+# which the data then follows subsequently. (This is just what our test trace
+# happens to contain). Adapt as suitable.
+public type @UNIT@ = unit {
+    payload: bytes &size=19;
+    protocol: uint16; # next-layer protocol, values need to be mapped to analyzers in Zeek scriptland
+
+    on %done {
+        # Feed into Zeek's next-layer packet analysis.
+        zeek::forward_packet(self.protocol);
+    }
+};

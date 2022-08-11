@@ -1,0 +1,18 @@
+import @ANALYZER@;
+import Zeek_@ANALYZER@;
+
+# TODO: Adjust below how/when the analyzer will be activated. The example
+# defines a well-known port to trigger it. For more information, see:
+#
+#   https://docs.zeek.org/projects/spicy/en/latest/zeek.html#interface-definitions-evt-files
+#
+protocol analyzer spicy::@ANALYZER@ over @PROTOCOL_UPPER@:
+    parse originator with @ANALYZER@::@UNIT_ORIG@,
+    parse responder with @ANALYZER@::@UNIT_RESP@,
+    port 12345/@PROTOCOL_LOWER@; # adapt port number in main.zeek accordingly
+
+# TODO: Connect Spicy-side events with Zeek-side events. The example just
+# defines simple example events that forwards the raw data (which in practice
+# you don't want to do!).
+on @ANALYZER@::@UNIT_ORIG@ -> event @ANALYZER@::request($conn, $is_orig, self.payload);
+on @ANALYZER@::@UNIT_RESP@ -> event @ANALYZER@::reply($conn, $is_orig, self.payload);

@@ -1,0 +1,79 @@
+module @ANALYZER@;
+
+export {
+	## Log stream identifier.
+	redef enum Log::ID += { LOG };
+
+	## Record type containing the column fields of the @ANALYZER@ log.
+	type Info: record {
+		## Timestamp for when the activity happened.
+		ts: time &log;
+		## Unique ID for the connection.
+		uid: string &log;
+		## The connection's 4-tuple of endpoint addresses/ports.
+		id: conn_id &log;
+
+		# TODO: Adapt subsequent fields as needed.
+
+		## Request-side payload.
+		request: string &optional &log;
+		## Response-side payload.
+		reply: string &optional &log;
+	};
+
+	## Default hook into @ANALYZER@ logging.
+	global log_@ANALYZER_LOWER@: event(rec: Info);
+}
+
+redef record connection += {
+	@ANALYZER_LOWER@: Info &optional;
+};
+
+const ports = {
+	# TODO: Replace with actual port(s).
+	12345/@PROTOCOL_LOWER@ # adapt port number in @ANALYZER_LOWER@.evt accordingly
+};
+
+redef likely_server_ports += { ports };
+
+event zeek_init() &priority=5
+	{
+	Log::create_stream(@ANALYZER@::LOG, [$columns=Info, $ev=log_@ANALYZER_LOWER@, $path="@ANALYZER_LOWER@"]);
+	}
+
+# Initialize logging state.
+hook set_session(c: connection)
+	{
+	if ( c?$@ANALYZER_LOWER@ )
+		return;
+
+	c$@ANALYZER_LOWER@ = Info($ts=network_time(), $uid=c$uid, $id=c$id);
+	}
+
+function emit_log(c: connection)
+	{
+	if ( ! c?$@ANALYZER_LOWER@ )
+		return;
+
+	Log::write(@ANALYZER@::LOG, c$@ANALYZER_LOWER@);
+	delete c$@ANALYZER_LOWER@;
+	}
+
+# Example event defined in @ANALYZER_LOWER@.evt.
+event @ANALYZER@::message(c: connection, is_orig: bool, payload: string)
+	{
+	hook set_session(c);
+
+	local info = c$@ANALYZER_LOWER@;
+	if ( is_orig )
+		info$request = payload;
+	else
+		info$reply = payload;
+	}
+
+event connection_state_remove(c: connection) &priority=-5
+	{
+	# TODO: For UDP protocols, you may want to do this after every request
+	# and/or reply.
+	emit_log(c);
+	}
