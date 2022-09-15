@@ -17,7 +17,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin/src/config.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/config.h" @ONLY)
 
 # Process any package-specific customizations
-include(plugin OPTIONAL)
+include(plugin.cmake OPTIONAL)
 
 # Our plugin source and scripts are in a subdirectory
 set(BRO_PLUGIN_BASE "${CMAKE_CURRENT_SOURCE_DIR}/plugin")
