@@ -11,4 +11,3 @@ event @ANALYZER@::content(f: fa_file, content: string)
     {
     print fmt("Testing @ANALYZER@: %s %s", f$id, content);
     }
-

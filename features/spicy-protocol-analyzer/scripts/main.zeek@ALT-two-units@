@@ -83,4 +83,3 @@ event connection_state_remove(c: connection) &priority=-5
 	# and/or reply.
 	emit_log(c);
 	}
-
