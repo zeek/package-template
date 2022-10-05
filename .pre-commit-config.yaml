@@ -8,3 +8,11 @@ repos:
     exclude: '.*/Baseline'
   - id: check-yaml
   - id: check-added-large-files
+
+- repo: local
+  hooks:
+  - id: stray_baselines
+    name: Check for stray BTest baselines
+    entry: ./tests/scripts/stray_baselines.py
+    language: python
+    pass_filenames: false
