@@ -1,0 +1,63 @@
+name: Check
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    container: zeekurity/zeek
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v3.0.0
+
+  btest-linux:
+    strategy:
+      matrix:
+        name:
+          - lts
+          - feature
+          - nightly
+        include:
+          - name: lts
+            container: 'zeekurity/zeek:lts'
+            allow_failure: false
+          - name: feature
+            container: 'zeekurity/zeek:latest'
+            allow_failure: false
+          - name: nightly
+            container: 'zeekurity/zeek-dev:latest'
+            allow_failure: true
+
+    name: Run test suite against Zeek (${{ matrix.name }})
+
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    continue-on-error: ${{ matrix.allow_failure }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        # The output of some commands of `zkg` on the template depends on the
+        # known tags. Fetch them all.
+        fetch-depth: 0
+
+    # The checkout action leaves the repo in a detached HEAD state which is not
+    # supported by zkg, see zeek/package-manager#145. Work around this under
+    # the assumption that we are running on a ref.
+    - name: Prepare repository
+      run: git switch -c "gh-ci-$$"
+
+    - name: Install prerequisites
+      run: |
+        apt-get update
+        apt-get install -y cmake libpcap-dev g++
+    - name: Run BTest suite
+      run: |
+        btest -djc tests/btest.cfg --xml=btest-results.xml
+    - uses: mikepenz/action-junit-report@v3
+      if: always() # Always run even if any previous step fails.
+      with:
+        report_paths: '**/btest-results.xml'
