@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# This script provides a wrapper around `zkg` which provides a workaround for
+# zeek/package-manager#139. The approach taken here is to provide an empty
+# `sources` section in the zkg configuration; this seems to disable updates of
+# the default package source.
+
+STATE=$(realpath "$(mktemp -d zkg.state.XXXXXX)")
+CONFIG=$(mktemp config.XXXXXX)
+
+trap 'rm -rf ${STATE} ${CONFIG}' EXIT
+
+# NOTE: The config must not contain a `templates`
+# section due to zeek/package-manager#144.
+cat >"$CONFIG" <<_END_
+[paths]
+state_dir = ${STATE}/.zkg
+script_dir = ${STATE}/.zkg/script_dir
+plugin_dir = ${STATE}/.zkg/plugin_dir
+bin_dir = ${STATE}/.zkg/bin
+zeek_dist =
+
+[sources]
+_END_
+
+zkg --configfile "$CONFIG" "$@"
