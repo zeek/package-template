@@ -16,3 +16,11 @@ repos:
     entry: ./tests/scripts/stray_baselines.py
     language: python
     pass_filenames: false
+  - id: vermin
+    name: Check minimal required Python version
+    # Minimal required Python version according to https://docs.zeek.org/en/master/install.html#required-dependencies.
+    entry: vermin -vv --target=3.5- .
+    language: python
+    pass_filenames: false
+    additional_dependencies:
+      - 'vermin'
