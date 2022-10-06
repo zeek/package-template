@@ -29,8 +29,11 @@ function build_and_test {
     ZKG_DEFAULT_TEMPLATE=${BASE} zkg create --packagedir spicy-test "$@"
 
     (cd spicy-test &&
-        (rm -rf build && mkdir build && cd build && cmake .. && make -j 4) && \
-        (cd testing && echo "--- ${description}" >>"${OUTPUT}" && rm -f "${DIAG}" && btest -f "${DIAG}" -dj; cat "${DIAG}" >>"${OUTPUT}"))
+        (rm -rf build && mkdir build && cd build && cmake .. && make -j 4) &&
+        (
+            cd testing && echo "--- ${description}" >>"${OUTPUT}" && rm -f "${DIAG}" && btest -f "${DIAG}" -dj
+            cat "${DIAG}" >>"${OUTPUT}"
+        ))
 }
 
 function show_failures {
@@ -70,7 +73,7 @@ build_and_test "Protocol Analyzer - UDP - two units" \
     --user-var analyzer=MyAnalyzer${rnd} \
     --user-var protocol=Udp \
     --user-var unit_orig=MyRequest${rnd} \
-    --user-var unit_resp=MyResponder${rnd} \
+    --user-var unit_resp=MyResponder${rnd}
 
 build_and_test "Protocol Analyzer - TCP - one unit" \
     --features=spicy-protocol-analyzer \
@@ -86,7 +89,7 @@ build_and_test "Protocol Analyzer - TCP - two units" \
     --user-var analyzer=MyAnalyzer${rnd} \
     --user-var protocol=Tcp \
     --user-var unit_orig=MyRequest${rnd} \
-    --user-var unit_resp=MyResponder${rnd} \
+    --user-var unit_resp=MyResponder${rnd}
 
 show_failures
 exit 0
