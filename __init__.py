@@ -12,10 +12,8 @@ import textwrap
 
 import git
 
-import zeekpkg.template # pylint: disable=import-error
-import zeekpkg.uservar # pylint: disable=import-error
-
-# pylint: disable=missing-docstring,no-self-use
+import zeekpkg.template
+import zeekpkg.uservar
 
 TEMPLATE_API_VERSION = '1.0.0'
 
@@ -158,27 +156,34 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
             self.instantiate_file(tmpl, orig_file, path_name, file_name, content)
 
         # Remove any files marked as unneeded.
-        for p in glob.glob(os.path.join(self._packagedir, "**/*.REMOVE"), recursive=True):
-            os.unlink(p)
+        for path in glob.glob(os.path.join(self._packagedir, "**/*.REMOVE"), recursive=True):
+            os.unlink(path)
 
         def pkg_file(*name):
-            p = os.path.join(self._packagedir, *name)
-            assert os.path.exists(p)
-            return p
+            path = os.path.join(self._packagedir, *name)
+            assert os.path.exists(path)
+            return path
 
         # Manually merge Spicy analyzer-specific changes to `zkg.meta`.
-        with open(pkg_file('zkg.meta'), 'ab') as f:
+        with open(pkg_file('zkg.meta'), 'ab') as zkg_meta:
             # Add a build command.
             #
             # NOTE: For backwards compatibility with <zkg-2.8.0 which did not
             # inject binary paths of installed packages into `PATH`, we allow
             # as a fallback a `spicyz` path inferred from `zkg`'s directory
             # structure.
-            f.write(b'build_command = mkdir -p build && cd build && SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && cmake --build .\n')
+            zkg_meta.write(
+                (
+                    b"build_command = mkdir -p build && "
+                    b"cd build && "
+                    b"SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && "
+                    b"cmake --build .\n"
+                )
+            )
 
         # Manually merge Spicy analyzer-specific changes to `testing/btest.cfg`.
-        with open(pkg_file('testing', 'btest.cfg'), 'ab') as f:
-            f.write(bytes(textwrap.dedent('''\
+        with open(pkg_file('testing', 'btest.cfg'), 'ab') as btest_cfg:
+            btest_cfg.write(bytes(textwrap.dedent('''\
                 DIST=%(testbase)s/..
                 # Set compilation-related variables to well-defined state.
                 CC=
@@ -210,7 +215,7 @@ class SpicyProtocolAnalyzer(SpicyAnalyzer):
         SpicyAnalyzer.validate(self, tmpl)
 
         protocol = tmpl.lookup_param("protocol_upper")
-        if protocol != "TCP" and protocol != "UDP":
+        if protocol not in ("TCP", "UDP"):
             raise zeekpkg.template.InputError('protocol must be TCP or UDP')
 
 
@@ -256,23 +261,41 @@ class Template(zeekpkg.template.Template):
             zeekpkg.uservar.UserVar(
                 'namespace', desc='a namespace for the package, e.g. "MyOrg"'),
             zeekpkg.uservar.UserVar(
-                'analyzer', desc='name of the Spicy analyzer, which typically corresponds to the protocol/format being parsed (e.g. "HTTP", "PNG")'),
+                'analyzer',
+                desc=(
+                    'name of the Spicy analyzer, which typically corresponds to the '
+                    'protocol/format being parsed (e.g. "HTTP", "PNG")'
+                ),
+            ),
             zeekpkg.uservar.UserVar(
                 'protocol', desc='transport protocol for the analyzer to use: TCP or UDP'),
             zeekpkg.uservar.UserVar(
-                'unit', desc='name of the top-level Spicy parsing unit for the file/packet format (e.g. "File" or "Packet")'),
+                "unit",
+                desc='name of the top-level Spicy parsing unit for the file/packet format (e.g. "File" or "Packet")',
+            ),
             zeekpkg.uservar.UserVar(
-                'unit_orig', desc='name of the top-level Spicy parsing unit for the originator side of the connection (e.g. "Request")'),
+                'unit_orig',
+                desc=(
+                    'name of the top-level Spicy parsing unit for the originator side '
+                    'of the connection (e.g. "Request")'
+                ),
+            ),
             zeekpkg.uservar.UserVar(
-                'unit_resp', desc='name of the top-level Spicy parsing unit for the responder side of the connection (e.g. "Reply"); may be the same as originator side'),
+                "unit_resp",
+                desc=(
+                    'name of the top-level Spicy parsing unit for the responder side of '
+                    'the connection (e.g. "Reply"); may be the same as originator side'
+                ),
+            ),
             zeekpkg.uservar.UserVar(
                 'author', default=author, desc='your name and email address'),
             zeekpkg.uservar.UserVar(
                 'license', desc='one of ' + ', '.join(License().license_keys(self)))
         ]
 
-    def apply_user_vars(self, uvars):
-        for uvar in uvars:
+    def apply_user_vars(self, user_vars):
+        # pylint: disable=too-many-branches
+        for uvar in user_vars:
             if uvar.name() == 'name':
                 self.define_param('name', uvar.val())
                 self.define_param('slug', zeekpkg.uservar.slugify(uvar.val()))

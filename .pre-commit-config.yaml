@@ -20,6 +20,13 @@ repos:
   hooks:
   - id: shellcheck
 
+- repo: https://github.com/PyCQA/pylint.git
+  rev: v2.15.3
+  hooks:
+    - id: pylint
+      additional_dependencies:
+        - 'zkg'
+
 - repo: local
   hooks:
   - id: stray_baselines
@@ -29,7 +36,9 @@ repos:
     pass_filenames: false
   - id: vermin
     name: Check minimal required Python version
-    # Minimal required Python version according to https://docs.zeek.org/en/master/install.html#required-dependencies.
+    # Minimal required Python version according to
+    # https://docs.zeek.org/en/master/install.html#required-dependencies.
+    # The value should be kept consistent with `py-version` in `.pylintrc`.
     entry: vermin -vv --target=3.5- .
     language: python
     pass_filenames: false
