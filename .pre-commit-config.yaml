@@ -15,6 +15,11 @@ repos:
     - id: shfmt
       args: ["-w", "-i", "4", "-ci"]
 
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.8.0.4
+  hooks:
+  - id: shellcheck
+
 - repo: local
   hooks:
   - id: stray_baselines
