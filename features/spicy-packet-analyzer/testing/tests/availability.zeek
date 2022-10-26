@@ -1,0 +1,1 @@
+../../../spicy-protocol-analyzer/testing/tests/availability.zeek

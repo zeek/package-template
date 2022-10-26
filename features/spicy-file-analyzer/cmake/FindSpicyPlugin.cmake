@@ -1,0 +1,1 @@
+../../spicy-protocol-analyzer/cmake/FindSpicyPlugin.cmake

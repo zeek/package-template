@@ -1,0 +1,7 @@
+# @TEST-DOC: Test parsing behavior of @ANALYZER@.
+#
+# @TEST-EXEC: spicyc ${DIST}/analyzer/@ANALYZER_LOWER@.spicy -j -d -o @ANALYZER_LOWER@.hlto
+#
+# TODO: Add/adapt standalone parsing tests here.
+# @TEST-EXEC: printf "test string" | spicy-dump -p @ANALYZER@::@UNIT_ORIG@ @ANALYZER_LOWER@.hlto >output 2>&1
+# @TEST-EXEC: TEST_DIFF_CANONIFIER= btest-diff output

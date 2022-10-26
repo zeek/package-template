@@ -6,6 +6,7 @@ https://docs.zeek.org/projects/package-manager/en/stable/api/template.html
 for details.
 """
 from datetime import date
+import glob
 import os
 import textwrap
 
@@ -29,25 +30,35 @@ class Package(zeekpkg.template.Package):
         # One cannot currently combine a Spicy analyzer and a general-purpose
         # plugin via features. Users who need this should start from either and
         # generalize as needed.
-        have_plugin, have_spicy_analyzer = False, False
+        have_plugin = False
+
+        analyzers = 0
 
         for feature in self._features:
             if isinstance(feature, Plugin):
                 have_plugin = True
-            if isinstance(feature, SpicyAnalyzer):
-                have_spicy_analyzer = True
+            if isinstance(feature, SpicyProtocolAnalyzer):
+                analyzers += 1
+            if isinstance(feature, SpicyFileAnalyzer):
+                analyzers += 1
+            if isinstance(feature, SpicyPacketAnalyzer):
+                analyzers += 1
 
-        if have_plugin and have_spicy_analyzer:
+        if have_plugin and analyzers > 0:
             raise zeekpkg.template.InputError(
-                'the "plugin" and "spicy-analyzer" features are mutually exclusive')
+                'the "plugin" and "spicy-protocol-analyzer" features are mutually exclusive')
+
+        if analyzers > 1:
+            raise zeekpkg.template.InputError(
+                'can use only one of the spicy-*-analyzers features at a time')
 
         if not tmpl.lookup_param('name'):
             raise zeekpkg.template.InputError(
                 'package requires a name')
 
-        if not tmpl.lookup_param('name').isalnum():
+        if not tmpl.lookup_param('name').isprintable():
             raise zeekpkg.template.InputError(
-                'package name "{}" must be alphanumeric'
+                'invalid package name "{}"'
                 .format(tmpl.lookup_param('name')))
 
         if tmpl.lookup_param('ns') and not tmpl.lookup_param('ns').isalnum():
@@ -121,27 +132,34 @@ class GithubCi(zeekpkg.template.Feature):
 
 
 class SpicyAnalyzer(zeekpkg.template.Feature):
-    """Feature for a Spicy-based analyzer."""
-    def name(self):
-        return 'spicy-analyzer'
+    """Base class for Spicy-based analyzers."""
 
     def contentdir(self):
         return os.path.join('features', self.name())
 
     def needed_user_vars(self):
-        """Specify required user variables."""
-        return ['name', 'namespace']
+        return ['name', 'analyzer']
 
     def validate(self, tmpl):
         """Validate feature prerequisites."""
-        for parameter in ['name', 'ns']:
+        for parameter in self.needed_user_vars():
             value = tmpl.lookup_param(parameter)
             if not value or len(value) == 0:
                 raise zeekpkg.template.InputError(
                         'package requires a {}'.format(parameter))
 
     def instantiate(self, tmpl):
-        super().instantiate(tmpl)
+        # Instead of calling super(), do this ourselves to instantiate symlinks as files.
+        for orig_file, path_name, file_name, content in self._walk(tmpl):
+            if os.path.islink(orig_file):
+                with open(orig_file, 'rb') as hdl:
+                    content = self._replace(tmpl, hdl.read())
+
+            self.instantiate_file(tmpl, orig_file, path_name, file_name, content)
+
+        # Remove any files marked as unneeded.
+        for p in glob.glob(os.path.join(self._packagedir, "**/*.REMOVE"), recursive=True):
+            os.unlink(p)
 
         def pkg_file(*name):
             p = os.path.join(self._packagedir, *name)
@@ -172,9 +190,50 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
                 DYLDFLAGS=
                 '''), 'ascii'))
 
-        # Manually merge Spicy analyzer-specific changes to `scripts/__load__.zeek`.
-        with open(pkg_file('scripts', '__load__.zeek'), 'ab') as f:
-            f.write(b'@load-sigs ./dpd.sig\n')
+        # Manually remove files from the primary template that we don't need.
+        os.remove(pkg_file('testing', 'tests', 'run-pcap.zeek'))
+        os.remove(pkg_file('testing', 'Traces', 'http.pcap'))
+
+
+class SpicyProtocolAnalyzer(SpicyAnalyzer):
+    """Feature for a Spicy-based protocol analyzer."""
+
+    def name(self):
+        return 'spicy-protocol-analyzer'
+
+    def needed_user_vars(self):
+        """Specify required user variables."""
+        return super().needed_user_vars() + ['protocol', 'unit_orig', 'unit_resp']
+
+    def validate(self, tmpl):
+        """Validate feature prerequisites."""
+        SpicyAnalyzer.validate(self, tmpl)
+
+        protocol = tmpl.lookup_param("protocol_upper")
+        if protocol != "TCP" and protocol != "UDP":
+            raise zeekpkg.template.InputError('protocol must be TCP or UDP')
+
+
+class SpicyFileAnalyzer(SpicyAnalyzer):
+    """Feature for a Spicy-based file analyzer."""
+
+    def name(self):
+        return 'spicy-file-analyzer'
+
+    def needed_user_vars(self):
+        """Specify required user variables."""
+        return super().needed_user_vars() + ['unit']
+
+
+class SpicyPacketAnalyzer(SpicyAnalyzer):
+    """Feature for a Spicy-based packet analyzer."""
+
+    def name(self):
+        return 'spicy-packet-analyzer'
+
+    def needed_user_vars(self):
+        """Specify required user variables."""
+        return super().needed_user_vars() + ['unit']
 
 
 class Template(zeekpkg.template.Template):
@@ -193,9 +252,19 @@ class Template(zeekpkg.template.Template):
 
         return [
             zeekpkg.uservar.UserVar(
-                'name', desc='the name of the package, e.g. "FooBar"'),
+                'name', desc='the name of the package, e.g. "FooBar" or "spicy-http"'),
             zeekpkg.uservar.UserVar(
                 'namespace', desc='a namespace for the package, e.g. "MyOrg"'),
+            zeekpkg.uservar.UserVar(
+                'analyzer', desc='name of the Spicy analyzer, which typically corresponds to the protocol/format being parsed (e.g. "HTTP", "PNG")'),
+            zeekpkg.uservar.UserVar(
+                'protocol', desc='transport protocol for the analyzer to use: TCP or UDP'),
+            zeekpkg.uservar.UserVar(
+                'unit', desc='name of the top-level Spicy parsing unit for the file/packet format (e.g. "File" or "Packet")'),
+            zeekpkg.uservar.UserVar(
+                'unit_orig', desc='name of the top-level Spicy parsing unit for the originator side of the connection (e.g. "Request")'),
+            zeekpkg.uservar.UserVar(
+                'unit_resp', desc='name of the top-level Spicy parsing unit for the responder side of the connection (e.g. "Reply"); may be the same as originator side'),
             zeekpkg.uservar.UserVar(
                 'author', default=author, desc='your name and email address'),
             zeekpkg.uservar.UserVar(
@@ -213,6 +282,26 @@ class Template(zeekpkg.template.Template):
                 self.define_param('ns_colons', uvar.val() + '::' if uvar.val() else '')
                 self.define_param('ns_underscore', uvar.val() + '_' if uvar.val() else '')
 
+            if uvar.name() == 'analyzer':
+                self.define_param('analyzer', uvar.val())
+                self.define_param('analyzer_lower', uvar.val().lower())
+                self.define_param('analyzer_upper', uvar.val().upper())
+
+            if uvar.name() == 'protocol':
+                self.define_param('protocol', uvar.val())
+                self.define_param('protocol_lower', uvar.val().lower())
+                self.define_param('protocol_upper', uvar.val().upper())
+
+            if uvar.name() == 'unit':
+                self.define_param('unit', uvar.val())
+
+            if uvar.name() == 'unit_orig':
+                self.define_param('unit_orig', uvar.val())
+                self.define_param('unit', uvar.val()) # add this for convenience in single-unit templates
+
+            if uvar.name() == 'unit_resp':
+                self.define_param('unit_resp', uvar.val())
+
             if uvar.name() == 'author':
                 self.define_param('author', uvar.val())
 
@@ -221,8 +310,23 @@ class Template(zeekpkg.template.Template):
 
         self.define_param('year', str(date.today().year))
 
+        # Select alternatives to use for protocol analyzers.
+        if self.lookup_param("unit_orig") and self.lookup_param("unit_orig") == self.lookup_param("unit_resp"):
+            self.define_param('ALT-one-unit', "")
+            self.define_param('ALT-two-units', ".REMOVE")
+        else:
+            self.define_param('ALT-one-unit', ".REMOVE")
+            self.define_param('ALT-two-units', "")
+
+        if self.lookup_param("protocol_lower") == "tcp":
+            self.define_param('ALT-tcp', "")
+            self.define_param('ALT-udp', ".REMOVE")
+        else:
+            self.define_param('ALT-tcp', ".REMOVE")
+            self.define_param('ALT-udp', "")
+
     def package(self):
         return Package()
 
     def features(self):
-        return [Plugin(), License(), GithubCi(), SpicyAnalyzer()]
+        return [Plugin(), License(), GithubCi(), SpicyProtocolAnalyzer(), SpicyFileAnalyzer(), SpicyPacketAnalyzer()]
