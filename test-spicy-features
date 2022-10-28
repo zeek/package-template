@@ -47,12 +47,6 @@ function show_failures {
 # hardcode a value rather than substituting it.
 rnd=_$$
 
-build_and_test "File Analyzer" \
-    --features=spicy-file-analyzer \
-    --user-var name=MyPackage${rnd} \
-    --user-var analyzer=MyAnalyzer${rnd} \
-    --user-var unit=MyFile${rnd}
-
 build_and_test "Protocol Analyzer - UDP - one unit" \
     --features=spicy-protocol-analyzer \
     --user-var name=MyPackage${rnd} \

@@ -1,0 +1,5 @@
+# @TEST-DOC: Smoke test for spicy-file-analyzer feature.
+
+# @TEST-EXEC: rnd=$$ && ${SCRIPTS}/zkg -vvv create --packagedir test --features=spicy-file-analyzer --user-var name=MyPackage${rnd} --user-var analyzer=MyAnalyzer${rnd} --user-var unit=MyFile${rnd}
+# @TEST-EXEC: mkdir test/build && cd test/build && cmake .. && make -j$(nproc)
+# @TEST-EXEC: btest -djc test/testing/btest.cfg
