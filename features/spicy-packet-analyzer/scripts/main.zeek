@@ -1,3 +1,5 @@
+@load base/misc/version
+
 module @ANALYZER@;
 
 event zeek_init() &priority=20
@@ -6,24 +8,30 @@ event zeek_init() &priority=20
 	# Ethernet and IP. The following sets that up, using a custom ether
 	# type 0x88b5. Adapt as suitable, some suggestions in comments.
 
+	@if ( Version::number >= 50200 )
+	local analyzer = PacketAnalyzer::ANALYZER_SPICY_@ANALYZER_UPPER@;
+	@else
+	local analyzer = PacketAnalyzer::ANALYZER_SPICY__@ANALYZER_UPPER@;
+	@endif
+
 	# Activate our analyzer on top of Ethernet.
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x88b5, PacketAnalyzer::ANALYZER_SPICY__@ANALYZER_UPPER@);
+	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x88b5, analyzer);
 
 	# Activate IP on top of our analyzer. 0x4950 is our own protocol's
 	# magic number indicating that IP comes next.
-	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_SPICY__@ANALYZER_UPPER@, 0x4950, PacketAnalyzer::ANALYZER_IP);
+	PacketAnalyzer::register_packet_analyzer(analyzer, 0x4950, PacketAnalyzer::ANALYZER_IP);
 
 	# Alternative: Use this if your analyzer parses a link layer protocol directly.
 	# const DLT_@ANALYZER@ : count = 12345;
-	# PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ROOT, DLT_@ANALYZER@, PacketAnalyzer::ANALYZER_SPICY__@ANALYZER_UPPER@);
+	# PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ROOT, DLT_@ANALYZER@, analyzer);
 
 	# Alternative: Use this if your analyzer parses a protocol running on top of
 	# IPv4, using the specified IP protocol number.
-	# PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_IP, 0xcafe, PacketAnalyzer::ANALYZER_SPICY__@ANALYZER_UPPER@);
+	# PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_IP, 0xcafe, analyzer);
 
 	# Alternative: Use this if you want your analyzer to run on top of UDP, activated on the specified well-known port.
 	# const ports: set[port] = { 6789/udp } &redef;
-	# PacketAnalyzer::register_for_ports(PacketAnalyzer::ANALYZER_UDP, PacketAnalyzer::ANALYZER_SPICY__@ANALYZER_UPPER@, ports);
+	# PacketAnalyzer::register_for_ports(PacketAnalyzer::ANALYZER_UDP, analyzer, ports);
 	}
 
 # Example event defined in @ANALYZER_LOWER@.evt.
