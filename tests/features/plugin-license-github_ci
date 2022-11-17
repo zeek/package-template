@@ -1,0 +1,8 @@
+# @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test --features plugin license github-ci --user-var name=Name --user-var namespace=Namespace --user-var license=apache --user-var author='Foo Bar <foo@example.org>'
+
+# @TEST-EXEC: find test -not \( -path test/.git -prune \) | sort --ignore-case >output
+# @TEST-EXEC: btest-diff output
+
+# @TEST-EXEC: cd test && ./configure 1>&2
+# @TEST-EXEC: make -C test/build/ -j`nproc` 1>&2
+# @TEST-EXEC: btest -djc test/testing/btest.cfg

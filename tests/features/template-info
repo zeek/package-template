@@ -1,0 +1,2 @@
+# @TEST-EXEC: ${SCRIPTS}/zkg template info >output 2>&1
+# @TEST-EXEC: TEST_DIFF_CANONIFIER=${SCRIPTS}/canonify-template-info.sh btest-diff output

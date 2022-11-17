@@ -1,0 +1,2 @@
+# @TEST-EXEC-FAIL: ${SCRIPTS}/zkg create --packagedir=test --features license --user-var name=Name --user-var author='Foo Bar <foo@example.org>' --user-var license=INVALID >output 2>&1
+# @TEST-EXEC: btest-diff output

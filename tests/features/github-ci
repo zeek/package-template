@@ -1,0 +1,6 @@
+# @TEST-DOC: Tests that the Github CI feature can be instantiated, produces GH config files, and tests successfully.
+#
+# @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test --features github-ci --user-var name=Name
+# @TEST-EXEC: find test/.github | sort --ignore-case >output
+# @TEST-EXEC: btest-diff output
+# @TEST-EXEC: btest -djc test/testing/btest.cfg

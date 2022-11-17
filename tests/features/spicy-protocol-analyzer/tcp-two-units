@@ -1,0 +1,5 @@
+# @TEST-DOC: Smoke test for TCP spicy-protocol-analyzer with two units.
+
+# @TEST-EXEC: rnd=$$ && ${SCRIPTS}/zkg -vvv create --packagedir test --features=spicy-protocol-analyzer --user-var name=MyPackage${rnd} --user-var analyzer=MyAnalyzer${rnd} --user-var protocol=Tcp --user-var unit_orig=MyRequest${rnd} --user-var unit_resp=MyResponse${rnd}
+# @TEST-EXEC: mkdir test/build && cd test/build && cmake .. && make -j$(nproc)
+# @TEST-EXEC: btest -djc test/testing/btest.cfg

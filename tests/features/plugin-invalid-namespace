@@ -1,0 +1,2 @@
+# @TEST-EXEC-FAIL: ${SCRIPTS}/zkg create --packagedir=test --features plugin --user-var name=Name --user-var namespace='%asdas$$' >output 2>&1
+# @TEST-EXEC: btest-diff output

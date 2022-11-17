@@ -1,0 +1,11 @@
+# @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test --features license --user-var name=Name --user-var author='Foo Bar <foo@example.org>' --user-var license=`tail -1 %INPUT`
+# @TEST-EXEC: btest-diff test/COPYING
+apache
+@TEST-START-NEXT
+bsd-2
+@TEST-START-NEXT
+bsd-3
+@TEST-START-NEXT
+mit
+@TEST-START-NEXT
+mpl-2
