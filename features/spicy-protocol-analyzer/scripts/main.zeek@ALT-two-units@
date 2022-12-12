@@ -1,3 +1,5 @@
+@load base/protocols/conn/removal-hooks
+
 module @ANALYZER@;
 
 export {
@@ -23,6 +25,9 @@ export {
 
 	## Default hook into @ANALYZER@ logging.
 	global log_@ANALYZER_LOWER@: event(rec: Info);
+
+	## @ANALYZER@ finalization hook.
+	global finalize_@ANALYZER_LOWER@: Conn::RemovalHook;
 }
 
 redef record connection += {
@@ -48,6 +53,7 @@ hook set_session(c: connection)
 		return;
 
 	c$@ANALYZER_LOWER@ = Info($ts=network_time(), $uid=c$uid, $id=c$id);
+	Conn::register_removal_hook(c, finalize_@ANALYZER_LOWER@);
 	}
 
 function emit_log(c: connection)
@@ -77,7 +83,7 @@ event @ANALYZER@::reply(c: connection, is_orig: bool, payload: string)
 	info$reply = payload;
 	}
 
-event connection_state_remove(c: connection) &priority=-5
+hook finalize_@ANALYZER_LOWER@(c: connection)
 	{
 	# TODO: For UDP protocols, you may want to do this after every request
 	# and/or reply.
