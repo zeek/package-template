@@ -1,5 +1,5 @@
 # @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test --features license --user-var name=Name --user-var author='Foo Bar <foo@example.org>' --user-var license=`tail -1 %INPUT`
-# @TEST-EXEC: btest-diff test/COPYING
+# @TEST-EXEC: TEST_DIFF_CANONIFIER=$SCRIPTS/canonify-copyright-year.sh btest-diff test/COPYING
 apache
 @TEST-START-NEXT
 bsd-2
