@@ -47,9 +47,13 @@ jobs:
 
     # The checkout action leaves the repo in a detached HEAD state which is not
     # supported by zkg, see zeek/package-manager#145. Work around this under
-    # the assumption that we are running on a ref.
+    # the assumption that we are running on a ref. The safe.directory option
+    # is now required and handled internally by Github actions (like checkout),
+    # but does not survive into this job, so we repeat it here.
     - name: Prepare repository
-      run: git switch -c "gh-ci-$$"
+      run: |
+        /usr/bin/git config --global --add safe.directory $(pwd)
+        /usr/bin/git switch -c "gh-ci-$$"
 
     - name: Install prerequisites
       run: |
