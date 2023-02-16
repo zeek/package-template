@@ -1,4 +1,6 @@
-# Zeek Package Template (Beta!)
+# Zeek Package Template
+
+[![Zeek tests](https://github.com/zeek/package-template/actions/workflows/check.yml/badge.svg)](https://github.com/zeek/package-template/actions/workflows/check.yml)
 
 This is the default template for the [Zeek](https://github.com/zeek/zeek)
 [package manager](https://github.com/zeek/package-manager). If your `zkg`
