@@ -24,13 +24,13 @@ jobs:
           - nightly
         include:
           - name: lts
-            container: 'zeekurity/zeek:lts'
+            container: 'zeek/zeek:lts'
             allow_failure: false
           - name: feature
-            container: 'zeekurity/zeek:latest'
+            container: 'zeek/zeek:latest'
             allow_failure: false
           - name: nightly
-            container: 'zeekurity/zeek-dev:latest'
+            container: 'zeek/zeek-dev:latest'
             allow_failure: true
 
     name: Run test suite against Zeek (${{ matrix.name }})
