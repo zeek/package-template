@@ -34,6 +34,8 @@ repos:
     entry: ./tests/scripts/stray_baselines.py
     language: python
     pass_filenames: false
+    additional_dependencies:
+    - 'btest'
   - id: vermin
     name: Check minimal required Python version
     # Minimal required Python version according to
