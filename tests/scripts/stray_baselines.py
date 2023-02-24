@@ -40,9 +40,7 @@ if __name__ == "__main__":
 
     if stray_tests:
         print(
-            "No matching tests for the following baselines:\n\n{}".format(
-                "\n".join(stray_tests)
-            ),
+            f"No matching tests for the following baselines:\n\n{os.linesep.join(stray_tests)}",
             file=sys.stderr,
         )
         sys.exit(1)

@@ -13,7 +13,7 @@ module-naming-style=any
 # https://docs.zeek.org/en/master/install.html#required-dependencies. This
 # value should be kept consistent with vermin's target version in
 # `.pre-commit-config.yaml`.
-py-version=3.5
+py-version=3.7
 
 [FORMAT]
 # Maximum number of characters on a single line.

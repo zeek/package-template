@@ -58,14 +58,12 @@ class Package(zeekpkg.template.Package):
 
         if not tmpl.lookup_param("name").isprintable():
             raise zeekpkg.template.InputError(
-                'invalid package name "{}"'.format(tmpl.lookup_param("name"))
+                f'invalid package name "{tmpl.lookup_param("name")}"'
             )
 
         if tmpl.lookup_param("ns") and not tmpl.lookup_param("ns").isalnum():
             raise zeekpkg.template.InputError(
-                'package namespace "{}" must be alphanumeric'.format(
-                    tmpl.lookup_param("ns")
-                )
+                f'package namespace "{tmpl.lookup_param("ns")}" must be alphanumeric'
             )
 
 
@@ -85,9 +83,7 @@ class Plugin(zeekpkg.template.Feature):
 
         if not tmpl.lookup_param("ns").isalnum():
             raise zeekpkg.template.InputError(
-                'package namespace "{}" must be alphanumeric'.format(
-                    tmpl.lookup_param("ns")
-                )
+                f'package namespace "{tmpl.lookup_param("ns")}" must be alphanumeric'
             )
 
 
@@ -154,9 +150,7 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
         for parameter in self.needed_user_vars():
             value = tmpl.lookup_param(parameter)
             if not value or len(value) == 0:
-                raise zeekpkg.template.InputError(
-                    "package requires a {}".format(parameter)
-                )
+                raise zeekpkg.template.InputError(f"package requires a {parameter}")
 
     def instantiate(self, tmpl):
         # Instead of calling super(), do this ourselves to instantiate symlinks as files.
@@ -187,12 +181,10 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
             # as a fallback a `spicyz` path inferred from `zkg`'s directory
             # structure.
             zkg_meta.write(
-                (
-                    b"build_command = mkdir -p build && "
-                    b"cd build && "
-                    b"SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && "
-                    b"cmake --build .\n"
-                )
+                b"build_command = mkdir -p build && "
+                b"cd build && "
+                b"SPICYZ=$(command -v spicyz || echo %(package_base)s/spicy-plugin/build/bin/spicyz) cmake .. && "
+                b"cmake --build .\n"
             )
 
         # Manually merge Spicy analyzer-specific changes to `testing/btest.cfg`.
