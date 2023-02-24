@@ -1,31 +1,48 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.3.0
+  rev: v4.4.0
   hooks:
   - id: trailing-whitespace
-    exclude: '.*/Baseline'
+    exclude: .*/Baseline
   - id: end-of-file-fixer
-    exclude: '.*/Baseline'
+    exclude: .*/Baseline
   - id: check-yaml
   - id: check-added-large-files
 
 - repo: https://github.com/maxwinterstein/shfmt-py
   rev: v3.4.3.1
   hooks:
-    - id: shfmt
-      args: ["-w", "-i", "4", "-ci"]
+  - id: shfmt
+    args: [-w, -i, '4', -ci]
 
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.8.0.4
+  rev: v0.9.0.2
   hooks:
   - id: shellcheck
 
 - repo: https://github.com/PyCQA/pylint.git
-  rev: v2.15.3
+  rev: v2.16.2
   hooks:
-    - id: pylint
-      additional_dependencies:
-        - 'zkg'
+  - id: pylint
+    additional_dependencies:
+    - zkg
+
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.7.0
+  hooks:
+  - id: pretty-format-yaml
+    args: [--autofix, --indent, '2']
+
+- repo: https://github.com/psf/black
+  rev: 23.1a1
+  hooks:
+  - id: black
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.3.1
+  hooks:
+  - id: pyupgrade
+    args: [--py37-plus]
 
 - repo: local
   hooks:
@@ -34,13 +51,15 @@ repos:
     entry: ./tests/scripts/stray_baselines.py
     language: python
     pass_filenames: false
+    additional_dependencies:
+    - btest
   - id: vermin
     name: Check minimal required Python version
     # Minimal required Python version according to
     # https://docs.zeek.org/en/master/install.html#required-dependencies.
     # The value should be kept consistent with `py-version` in `.pylintrc`.
-    entry: vermin -vv --target=3.5- .
+    entry: vermin -vv --target=3.7- .
     language: python
     pass_filenames: false
     additional_dependencies:
-      - 'vermin'
+    - vermin

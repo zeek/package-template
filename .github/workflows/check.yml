@@ -1,36 +1,41 @@
-name: Check
+name: Zeek tests
 
 on:
   pull_request:
   push:
     branches: [master]
+  schedule:
+  - cron: 0 0 * * *
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-20.04
-    container: zeekurity/zeek
+    # Scheduled runs don't act on new commits, so skip pre-commit analysis
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
     - uses: pre-commit/action@v3.0.0
 
   btest-linux:
     strategy:
       matrix:
         name:
-          - lts
-          - feature
-          - nightly
+        - lts
+        - feature
+        - nightly
         include:
-          - name: lts
-            container: 'zeekurity/zeek:lts'
-            allow_failure: false
-          - name: feature
-            container: 'zeekurity/zeek:latest'
-            allow_failure: false
-          - name: nightly
-            container: 'zeekurity/zeek-dev:latest'
-            allow_failure: true
+        - name: lts
+          container: zeek/zeek:lts
+          allow_failure: false
+        - name: feature
+          container: zeek/zeek:latest
+          allow_failure: false
+        - name: nightly
+          container: zeek/zeek-dev:latest
+          allow_failure: true
 
     name: Run test suite against Zeek (${{ matrix.name }})
 
@@ -46,9 +51,13 @@ jobs:
 
     # The checkout action leaves the repo in a detached HEAD state which is not
     # supported by zkg, see zeek/package-manager#145. Work around this under
-    # the assumption that we are running on a ref.
+    # the assumption that we are running on a ref. The safe.directory option
+    # is now required and handled internally by Github actions (like checkout),
+    # but does not survive into this job, so we repeat it here.
     - name: Prepare repository
-      run: git switch -c "gh-ci-$$"
+      run: |
+        /usr/bin/git config --global --add safe.directory $(pwd)
+        /usr/bin/git switch -c "gh-ci-$$"
 
     - name: Install prerequisites
       run: |

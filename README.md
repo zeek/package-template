@@ -1,4 +1,7 @@
-# Zeek Package Template (Beta!)
+# Zeek Package Template
+
+[![Zeek matrix tests](https://img.shields.io/github/actions/workflow/status/zeek/package-template/check.yml?event=push&label=Zeek%20matrix%20tests)](https://github.com/zeek/package-template/actions/workflows/check.yml?query=event:push)
+[![Zeek nightly tests](https://img.shields.io/github/actions/workflow/status/zeek/package-template/check.yml?event=schedule&label=Zeek%20nightly%20tests)](https://github.com/zeek/package-template/actions/workflows/check.yml?query=event:schedule)
 
 This is the default template for the [Zeek](https://github.com/zeek/zeek)
 [package manager](https://github.com/zeek/package-manager). If your `zkg`
