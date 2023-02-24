@@ -1,12 +1,16 @@
-name: Check
+name: Zeek tests
 
 on:
   pull_request:
   push:
     branches: [master]
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   pre-commit:
+    # Scheduled runs don't act on new commits, so skip pre-commit analysis
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
