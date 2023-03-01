@@ -8,11 +8,11 @@ jobs:
   test-nightly:
     runs-on: ubuntu-20.04
     steps:
-    - uses: zeek/action-zkg-install@v1
+    - uses: zeek/action-zkg-install@v2
       with:
         pkg: ${{ github.server_url }}/${{ github.repository }}
         zeek_version: zeek-nightly
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       if: failure()
       with:
         name: zkg-logs
