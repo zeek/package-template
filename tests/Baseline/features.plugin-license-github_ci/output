@@ -29,7 +29,7 @@ test/testing
 test/testing/.gitignore
 test/testing/Baseline
 test/testing/Baseline/tests.run-pcap
-test/testing/Baseline/tests.run-pcap/conn.log
+test/testing/Baseline/tests.run-pcap/conn.log.filtered
 test/testing/Baseline/tests.run-pcap/output
 test/testing/Baseline/tests.show-plugin
 test/testing/Baseline/tests.show-plugin/output
