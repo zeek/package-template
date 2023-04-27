@@ -62,7 +62,7 @@ jobs:
     - name: Install prerequisites
       run: |
         apt-get update
-        apt-get install -y cmake libpcap-dev g++
+        apt-get install -y cmake libpcap-dev libssl-dev g++
     - name: Run BTest suite
       run: |
         btest -djc tests/btest.cfg --xml=btest-results.xml

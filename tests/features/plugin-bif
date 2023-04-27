@@ -1,0 +1,44 @@
+# A test to verify that BiF compilation succeeds in a plugin.
+#
+# @TEST-EXEC: bash %INPUT
+# @TEST-EXEC: cd test && ./configure 1>&2
+# @TEST-EXEC: cd test/build && cmake --build . --verbose 1>&2
+# @TEST-EXEC: btest -djc test/testing/btest.cfg
+
+${SCRIPTS}/zkg create --packagedir=test --features plugin --user-var name=Name --user-var namespace=Namespace
+
+# Add the below BiF, header, and updated Baseline
+cp test.bif test/plugin/src/
+cp test.h test/plugin/src/
+cp output test/testing/Baseline/tests.show-plugin/output
+
+(
+    cd test
+    ${SCRIPTS}/git add -u
+    ${SCRIPTS}/git add plugin/src/test.bif plugin/src/test.h
+    ${SCRIPTS}/git commit -m test
+)
+
+@TEST-START-FILE test.bif
+module Namespace::Name;
+
+%%{
+// Add dummy header include to verify include path handling
+#include "test.h"
+%%}
+
+function biftest%(%): string
+%{
+	return zeek::make_intrusive<zeek::StringVal>("test");
+%}
+@TEST-END-FILE
+
+@TEST-START-FILE test.h
+#include <string>
+@TEST-END-FILE
+
+@TEST-START-FILE output
+Namespace::Name - TODO: Insert description (dynamic, version)
+    [Function] Namespace::Name::biftest
+
+@TEST-END-FILE

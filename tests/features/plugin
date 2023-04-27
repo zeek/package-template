@@ -1,3 +1,9 @@
+# A test to verify that plugin compilation succeeds. Requires make to be the
+# default generator.
+#
+# @TEST-REQUIRES: make --version
+# @TEST-REQUIRES: cmake --help | grep -q '^* Unix Makefiles'
+#
 # @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test --features plugin --user-var name=Name --user-var namespace=Namespace
 # @TEST-EXEC: cd test && ./configure 1>&2
 # @TEST-EXEC: make -C test/build/ -j`nproc` 1>&2

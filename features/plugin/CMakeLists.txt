@@ -1,6 +1,6 @@
 # This file is maintained by zkg. Do not edit.
 # Put required additional cmake functionality into plugin.cmake.
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
 
 project(ZeekPlugin@NAME@)
 
@@ -21,6 +21,9 @@ include(plugin.cmake OPTIONAL)
 
 # Our plugin source and scripts are in a subdirectory
 set(BRO_PLUGIN_BASE "${CMAKE_CURRENT_SOURCE_DIR}/plugin")
+
+# Workaround to make header files in plugin sources available to BiFs.
+include_directories("${BRO_PLUGIN_BASE}/src")
 
 include(ZeekPlugin)
 
