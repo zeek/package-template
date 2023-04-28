@@ -23,6 +23,9 @@ export {
 		reply: string &optional &log;
 	};
 
+	## A default logging policy hook for the stream.
+	global log_policy: Log::PolicyHook;
+
 	## Default hook into @ANALYZER@ logging.
 	global log_@ANALYZER_LOWER@: event(rec: Info);
 
@@ -43,7 +46,7 @@ redef likely_server_ports += { ports };
 
 event zeek_init() &priority=5
 	{
-	Log::create_stream(@ANALYZER@::LOG, [$columns=Info, $ev=log_@ANALYZER_LOWER@, $path="@ANALYZER_LOWER@"]);
+	Log::create_stream(@ANALYZER@::LOG, [$columns=Info, $ev=log_@ANALYZER_LOWER@, $path="@ANALYZER_LOWER@", $policy=log_policy]);
 	}
 
 # Initialize logging state.
