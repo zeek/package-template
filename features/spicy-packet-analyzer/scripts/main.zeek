@@ -7,12 +7,7 @@ event zeek_init() &priority=20
 	# TODO: Our example here models a custom protocol sitting between
 	# Ethernet and IP. The following sets that up, using a custom ether
 	# type 0x88b5. Adapt as suitable, some suggestions in comments.
-
-	@if ( Version::number >= 50200 )
-	local analyzer = PacketAnalyzer::ANALYZER_SPICY_@ANALYZER_UPPER@;
-	@else
-	local analyzer = PacketAnalyzer::ANALYZER_SPICY__@ANALYZER_UPPER@;
-	@endif
+	local analyzer = PacketAnalyzer::ANALYZER_@ANALYZER_UPPER@;
 
 	# Activate our analyzer on top of Ethernet.
 	PacketAnalyzer::register_packet_analyzer(PacketAnalyzer::ANALYZER_ETHERNET, 0x88b5, analyzer);

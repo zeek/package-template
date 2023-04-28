@@ -1,7 +1,7 @@
 import @ANALYZER@;
 import Zeek_@ANALYZER@;
 
-packet analyzer spicy::@ANALYZER@:
+packet analyzer @ANALYZER@:
     parse with @ANALYZER@::@UNIT@;
 
 # TODO: Connect Spicy-side events with Zeek-side events. The example just
