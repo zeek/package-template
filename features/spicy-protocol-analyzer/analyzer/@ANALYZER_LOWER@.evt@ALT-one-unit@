@@ -6,7 +6,7 @@ import Zeek_@ANALYZER@;
 #
 #   https://docs.zeek.org/projects/spicy/en/latest/zeek.html#interface-definitions-evt-files
 #
-protocol analyzer spicy::@ANALYZER@ over @PROTOCOL_UPPER@:
+protocol analyzer @ANALYZER@ over @PROTOCOL_UPPER@:
     parse originator with @ANALYZER@::@UNIT@,
     parse responder with @ANALYZER@::@UNIT@,
     port 12345/@PROTOCOL_LOWER@; # adapt port number in main.zeek accordingly

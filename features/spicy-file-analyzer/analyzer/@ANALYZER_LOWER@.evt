@@ -10,7 +10,7 @@ import Zeek_@ANALYZER@;
 #
 #   https://docs.zeek.org/projects/spicy/en/latest/zeek.html#interface-definitions-evt-files
 #
-file analyzer spicy::@ANALYZER@:
+file analyzer @ANALYZER@:
     parse with @ANALYZER@::@UNIT@,
     mime-type application/x-@ANALYZER_LOWER@;
 
