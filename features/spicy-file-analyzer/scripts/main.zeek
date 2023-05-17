@@ -17,6 +17,9 @@ export {
 		content: string &optional &log;
 	};
 
+	## A default logging policy hook for the stream.
+	global log_policy: Log::PolicyHook;
+
 	## Default hook into @ANALYZER@ logging.
 	global log_@ANALYZER_LOWER@: event(info: Info);
 }
@@ -27,7 +30,7 @@ redef record fa_file += {
 
 event zeek_init() &priority=5
 	{
-	Log::create_stream(@ANALYZER@::LOG, [$columns=Info, $ev=log_@ANALYZER_LOWER@, $path="@ANALYZER_LOWER@"]);
+	Log::create_stream(@ANALYZER@::LOG, [$columns=Info, $ev=log_@ANALYZER_LOWER@, $path="@ANALYZER_LOWER@", $policy=log_policy]);
 	}
 
 hook set_file(f: fa_file) &priority=5
