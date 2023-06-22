@@ -10,7 +10,7 @@ import zeek;
 # they are indeed parsing the right protocol. Pick a unit that's a little bit
 # into the parsing process here.
 #
-# on @ANALYZER@::SUITABLE_UNIT {
+# on @ANALYZER@::SUITABLE_UNIT::%done {
 #     zeek::confirm_protocol();
 # }
 
