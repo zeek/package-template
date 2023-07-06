@@ -45,7 +45,7 @@ class Package(zeekpkg.template.Package):
 
         if have_plugin and analyzers > 0:
             raise zeekpkg.template.InputError(
-                'the "plugin" and "spicy-protocol-analyzer" features are mutually exclusive'
+                'the "plugin" and "spicy-[file|packet|protocol]-analyzer" features are mutually exclusive'
             )
 
         if analyzers > 1:
