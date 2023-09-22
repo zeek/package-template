@@ -63,3 +63,8 @@ repos:
     pass_filenames: false
     additional_dependencies:
     - vermin
+
+- repo: https://github.com/crate-ci/typos
+  rev: v1.16.12
+  hooks:
+  - id: typos
