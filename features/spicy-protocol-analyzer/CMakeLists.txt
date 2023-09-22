@@ -5,7 +5,7 @@ project(@ANALYZER@ LANGUAGES C)
 list(PREPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(SpicyPlugin REQUIRED)
 
-# Set mininum versions that this plugin needs. Make sure to use "x.y.z" format.
+# Set minimum versions that this plugin needs. Make sure to use "x.y.z" format.
 # spicy_require_version("1.2.0")
 # spicy_plugin_require_version("0.99.0")
 # zeek_require_version("5.0.0")
