@@ -1,0 +1,6 @@
+# @TEST-DOC: Baseline generated btest.cfg for pure packages and plugins.
+#
+# @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test-package --user-var name=Package
+# @TEST-EXEC: TEST_DIFF_CANONIFIER= btest-diff test-package/testing/btest.cfg
+# @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test-plugin --features plugin --user-var name=Plugin --user-var namespace=Namespace
+# @TEST-EXEC: TEST_DIFF_CANONIFIER= btest-diff test-plugin/testing/btest.cfg

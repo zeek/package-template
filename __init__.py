@@ -19,6 +19,9 @@ TEMPLATE_API_VERSION = "1.0.0"
 
 
 class Package(zeekpkg.template.Package):
+    have_plugin = False
+    num_spicy_analyzers = 0
+
     def contentdir(self):
         return "package"
 
@@ -26,33 +29,6 @@ class Package(zeekpkg.template.Package):
         return ["name"]
 
     def validate(self, tmpl):
-        # One cannot currently combine a Spicy analyzer and a general-purpose
-        # plugin via features. Users who need this should start from either and
-        # generalize as needed.
-        have_plugin = False
-
-        analyzers = 0
-
-        for feature in self._features:
-            if isinstance(feature, Plugin):
-                have_plugin = True
-            if isinstance(feature, SpicyProtocolAnalyzer):
-                analyzers += 1
-            if isinstance(feature, SpicyFileAnalyzer):
-                analyzers += 1
-            if isinstance(feature, SpicyPacketAnalyzer):
-                analyzers += 1
-
-        if have_plugin and analyzers > 0:
-            raise zeekpkg.template.InputError(
-                'the "plugin" and "spicy-[file|packet|protocol]-analyzer" features are mutually exclusive'
-            )
-
-        if analyzers > 1:
-            raise zeekpkg.template.InputError(
-                "can use only one of the spicy-*-analyzers features at a time"
-            )
-
         if not tmpl.lookup_param("name"):
             raise zeekpkg.template.InputError("package requires a name")
 
@@ -65,6 +41,31 @@ class Package(zeekpkg.template.Package):
             raise zeekpkg.template.InputError(
                 f'package namespace "{tmpl.lookup_param("ns")}" must be alphanumeric'
             )
+
+    def add_feature(self, feature):
+        # One cannot currently combine a Spicy analyzer and a general-purpose
+        # plugin via features. Users who need this should start from either and
+        # generalize as needed.
+        if isinstance(feature, Plugin):
+            self.have_plugin = True
+        if isinstance(feature, SpicyProtocolAnalyzer):
+            self.num_spicy_analyzers += 1
+        if isinstance(feature, SpicyFileAnalyzer):
+            self.num_spicy_analyzers += 1
+        if isinstance(feature, SpicyPacketAnalyzer):
+            self.num_spicy_analyzers += 1
+
+        if self.have_plugin and self.num_spicy_analyzers > 0:
+            raise zeekpkg.template.InputError(
+                'the "plugin" and "spicy-[file|packet|protocol]-analyzer" features are mutually exclusive'
+            )
+
+        if self.num_spicy_analyzers > 1:
+            raise zeekpkg.template.InputError(
+                "can use only one of the spicy-*-analyzers features at a time"
+            )
+
+        return super().add_feature(feature)
 
 
 class Plugin(zeekpkg.template.Feature):
@@ -255,6 +256,11 @@ class SpicyPacketAnalyzer(SpicyAnalyzer):
 
 
 class Template(zeekpkg.template.Template):
+    # Have just one instance of the package so we can query which features
+    # have been added by the user. Otherwise, apply_user_vars() does not
+    # have access back to the package instance handed out.
+    _package = Package()
+
     def define_user_vars(self):
         # Try to determine user name and email via the git config. This relies
         # on the fact that zkg itself must have the git module available.
@@ -373,8 +379,18 @@ class Template(zeekpkg.template.Template):
             self.define_param("ALT-tcp", ".REMOVE")
             self.define_param("ALT-udp", "")
 
+        # Comment out ZEEK_PLUGIN_PATH in btest.cfg for pure packages. Since
+        # the param is still part of the template we need to emit _something_.
+        btest_zeek_plugin_path = (
+            r"ZEEK_PLUGIN_PATH=`%(testbase)s/Scripts/get-zeek-env zeek_plugin_path`"
+        )
+        if self._package.num_spicy_analyzers == 0 and not self._package.have_plugin:
+            btest_zeek_plugin_path = "# " + btest_zeek_plugin_path
+
+        self.define_param("btest_zeek_plugin_path", btest_zeek_plugin_path)
+
     def package(self):
-        return Package()
+        return self._package
 
     def features(self):
         return [

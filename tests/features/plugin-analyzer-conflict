@@ -1,0 +1,4 @@
+# @TEST-DOC: Verifies plugin and spicy-protocol-analyzer can not be used together and fails quickly.
+#
+# @TEST-EXEC-FAIL: ${SCRIPTS}/zkg create --packagedir=test --features plugin spicy-protocol-analyzer --user-var name=Name --user-var namespace=Namespace --user-var analyzer=MyAnalyzer --user-var protocol=Tcp --user-var unit_orig=MyMessage --user-var unit_resp=MyMessage
+# @TEST-EXEC: grep -F 'the "plugin" and "spicy-[file|packet|protocol]-analyzer" features are mutually exclusive' .stderr
