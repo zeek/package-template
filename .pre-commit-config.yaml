@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v4.5.0
   hooks:
   - id: trailing-whitespace
     exclude: .*/Baseline
@@ -10,36 +10,36 @@ repos:
   - id: check-added-large-files
 
 - repo: https://github.com/maxwinterstein/shfmt-py
-  rev: v3.4.3.1
+  rev: v3.7.0.1
   hooks:
   - id: shfmt
     args: [-w, -i, '4', -ci]
 
 - repo: https://github.com/shellcheck-py/shellcheck-py
-  rev: v0.9.0.2
+  rev: v0.9.0.6
   hooks:
   - id: shellcheck
 
 - repo: https://github.com/PyCQA/pylint.git
-  rev: v2.16.2
+  rev: v3.0.1
   hooks:
   - id: pylint
     additional_dependencies:
     - zkg
 
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.7.0
+  rev: v2.11.0
   hooks:
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
 
 - repo: https://github.com/psf/black
-  rev: 23.1a1
+  rev: 23.10.1
   hooks:
   - id: black
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.3.1
+  rev: v3.15.0
   hooks:
   - id: pyupgrade
     args: [--py37-plus]
@@ -65,6 +65,6 @@ repos:
     - vermin
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.16.12
+  rev: v1.16.22
   hooks:
   - id: typos

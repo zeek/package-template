@@ -6,6 +6,12 @@ export {
 	## Log stream identifier.
 	redef enum Log::ID += { LOG };
 
+	## The ports to register @ANALYZER@ for.
+	const ports = {
+		# TODO: Replace with actual port(s).
+		12345/@PROTOCOL_LOWER@,
+	} &redef;
+
 	## Record type containing the column fields of the @ANALYZER@ log.
 	type Info: record {
 		## Timestamp for when the activity happened.
@@ -37,16 +43,13 @@ redef record connection += {
 	@ANALYZER_LOWER@: Info &optional;
 };
 
-const ports = {
-	# TODO: Replace with actual port(s).
-	12345/@PROTOCOL_LOWER@ # adapt port number in @ANALYZER_LOWER@.evt accordingly
-};
-
 redef likely_server_ports += { ports };
 
 event zeek_init() &priority=5
 	{
 	Log::create_stream(@ANALYZER@::LOG, [$columns=Info, $ev=log_@ANALYZER_LOWER@, $path="@ANALYZER_LOWER@", $policy=log_policy]);
+
+	Analyzer::register_for_ports(Analyzer::ANALYZER_@ANALYZER_UPPER@, ports);
 	}
 
 # Initialize logging state.
