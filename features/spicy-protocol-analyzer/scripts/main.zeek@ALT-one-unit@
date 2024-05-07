@@ -45,11 +45,23 @@ redef record connection += {
 
 redef likely_server_ports += { ports };
 
+# TODO: If you're going to send file data into the file analysis framework, you
+# need to provide a file handle function. This is a simple example that's
+# sufficient if the protocol only transfers a single, complete file at a time.
+#
+# function get_file_handle(c: connection, is_orig: bool): string
+#	{
+#	return cat(Analyzer::ANALYZER_@ANALYZER_UPPER@, c$start_time, c$id, is_orig);
+#	}
+
 event zeek_init() &priority=5
 	{
 	Log::create_stream(@ANALYZER@::LOG, [$columns=Info, $ev=log_@ANALYZER_LOWER@, $path="@ANALYZER_LOWER@", $policy=log_policy]);
 
 	Analyzer::register_for_ports(Analyzer::ANALYZER_@ANALYZER_UPPER@, ports);
+
+	# TODO: To activate the file handle function above, uncomment this.
+	# Files::register_protocol(Analyzer::ANALYZER_@ANALYZER_UPPER@, [$get_file_handle=@ANALYZER@::get_file_handle ]);
 	}
 
 # Initialize logging state.
