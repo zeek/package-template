@@ -136,6 +136,9 @@ class GithubCi(zeekpkg.template.Feature):
     def contentdir(self):
         return os.path.join("features", self.name())
 
+    def validate(self, tmpl):
+        pass
+
 
 class SpicyAnalyzer(zeekpkg.template.Feature):
     """Base class for Spicy-based analyzers."""
