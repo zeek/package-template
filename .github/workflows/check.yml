@@ -13,13 +13,18 @@ jobs:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: 3.x
-    - uses: pre-commit/action@v3.0.0
+    - uses: pre-commit/action@v3.0.1
 
   btest-linux:
+    permissions:
+      # This is for action-junit-report, see
+      # https://github.com/mikepenz/action-junit-report?tab=readme-ov-file#pr-run-permissions
+      # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+      checks: write
     strategy:
       matrix:
         name:
@@ -43,7 +48,7 @@ jobs:
     container: ${{ matrix.container }}
     continue-on-error: ${{ matrix.allow_failure }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         # The output of some commands of `zkg` on the template depends on the
         # known tags. Fetch them all.
@@ -66,7 +71,7 @@ jobs:
     - name: Run BTest suite
       run: |
         btest -djc tests/btest.cfg --xml=btest-results.xml
-    - uses: mikepenz/action-junit-report@v3
+    - uses: mikepenz/action-junit-report@v4
       if: always() # Always run even if any previous step fails.
       with:
         report_paths: '**/btest-results.xml'
