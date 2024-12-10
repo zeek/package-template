@@ -3,5 +3,12 @@
 # @TEST-EXEC: spicyc ${DIST}/analyzer/@ANALYZER_LOWER@.spicy -j -d -o @ANALYZER_LOWER@.hlto
 #
 # TODO: Add/adapt standalone parsing tests here.
+#
+# NOTE: If you cannot easily test your parser using "printf", consider
+# using spicy-driver's batch mode instead to test with application
+# payload extracted from a PCAP trace. See the tutorial in the Spicy
+# documentation for more on how to create and use such batch files:
+# https://docs.zeek.org/projects/spicy/en/latest/tutorial#testing-with-batch-mode
+#
 # @TEST-EXEC: printf "test string" | spicy-dump -p @ANALYZER@::@UNIT_ORIG@ @ANALYZER_LOWER@.hlto >output 2>&1
 # @TEST-EXEC: TEST_DIFF_CANONIFIER= btest-diff output
