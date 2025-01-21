@@ -8,11 +8,13 @@
 # handlers.
 
 event @ANALYZER@::request(c: connection, is_orig: bool, payload: string)
-    {
-    print fmt("Testing @ANALYZER@: [request] %s %s", c$id, payload);
-    }
+	{
+	print fmt("Testing @ANALYZER@: [request] [orig_h=%s, orig_p=%s, resp_h=%s, resp_p=%s] %s",
+	    c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, payload);
+	}
 
 event @ANALYZER@::reply(c: connection, is_orig: bool, payload: string)
-    {
-    print fmt("Testing @ANALYZER@: [reply] %s %s", c$id, payload);
-    }
+	{
+	print fmt("Testing @ANALYZER@: [reply] [orig_h=%s, orig_p=%s, resp_h=%s, resp_p=%s] %s",
+	    c$id$orig_h, c$id$orig_p, c$id$resp_h, c$id$resp_p, payload);
+	}

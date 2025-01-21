@@ -2,7 +2,7 @@ exclude: .*/Baseline
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v5.0.0
   hooks:
   - id: trailing-whitespace
   - id: end-of-file-fixer
@@ -20,29 +20,18 @@ repos:
   hooks:
   - id: shellcheck
 
-- repo: https://github.com/PyCQA/pylint.git
-  rev: v3.2.7
-  hooks:
-  - id: pylint
-    additional_dependencies:
-    - zkg
-
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.14.0
   hooks:
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
 
-- repo: https://github.com/psf/black
-  rev: 24.8.0
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.9.2
   hooks:
-  - id: black
-
-- repo: https://github.com/asottile/pyupgrade
-  rev: v3.17.0
-  hooks:
-  - id: pyupgrade
-    args: [--py37-plus]
+  - id: ruff-format
+  - id: ruff
+    args: [--fix]
 
 - repo: local
   hooks:
@@ -53,18 +42,8 @@ repos:
     pass_filenames: false
     additional_dependencies:
     - btest
-  - id: vermin
-    name: Check minimal required Python version
-    # Minimal required Python version according to
-    # https://docs.zeek.org/en/master/install.html#required-dependencies.
-    # The value should be kept consistent with `py-version` in `.pylintrc`.
-    entry: vermin -vv --target=3.7- .
-    language: python
-    pass_filenames: false
-    additional_dependencies:
-    - vermin
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.24.3
+  rev: v1.29.4
   hooks:
   - id: typos
