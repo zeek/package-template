@@ -8,6 +8,7 @@ for details.
 
 from datetime import date
 import glob
+import keyword
 import os
 import textwrap
 
@@ -150,12 +151,25 @@ class SpicyAnalyzer(zeekpkg.template.Feature):
     def needed_user_vars(self):
         return ["name", "analyzer"]
 
-    def validate(self, tmpl):
+    def validate(self, tmpl: zeekpkg.template.Template):
         """Validate feature prerequisites."""
+
+        # Validate that needed user vars are present.
         for parameter in self.needed_user_vars():
             value = tmpl.lookup_param(parameter)
             if not value or len(value) == 0:
                 raise zeekpkg.template.InputError(f"package requires a {parameter}")
+
+        # Validate that the analyzer name (emitted as a Spicy identifier) does
+        # not contain unsupported patterns. We use a shortcut implementation
+        # and require identifiers valid in Python; this rejects e.g., names
+        # containing `+` (which are also invalid Spicy), but also rejects
+        # Python keywords, so we allow them separately.
+        if analyzer := tmpl.lookup_param("analyzer"):
+            if not analyzer.isidentifier() and not keyword.iskeyword(analyzer):
+                raise zeekpkg.template.InputError(
+                    f"analyzer name {analyzer} contains unsupported characters"
+                )
 
     def instantiate(self, tmpl):
         # Instead of calling super(), do this ourselves to instantiate symlinks as files.
