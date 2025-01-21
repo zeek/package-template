@@ -6,14 +6,13 @@ https://docs.zeek.org/projects/package-manager/en/stable/api/template.html
 for details.
 """
 
-from datetime import date
 import glob
 import keyword
 import os
 import textwrap
+from datetime import date
 
 import git
-
 import zeekpkg.template
 import zeekpkg.uservar
 
