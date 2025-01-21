@@ -2,7 +2,7 @@ exclude: .*/Baseline
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v5.0.0
   hooks:
   - id: trailing-whitespace
   - id: end-of-file-fixer
@@ -44,6 +44,6 @@ repos:
     - btest
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.24.3
+  rev: v1.29.4
   hooks:
   - id: typos
