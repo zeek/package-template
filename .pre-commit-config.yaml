@@ -42,7 +42,7 @@ repos:
   rev: v3.17.0
   hooks:
   - id: pyupgrade
-    args: [--py37-plus]
+    args: [--py39-plus]
 
 - repo: local
   hooks:
@@ -58,7 +58,7 @@ repos:
     # Minimal required Python version according to
     # https://docs.zeek.org/en/master/install.html#required-dependencies.
     # The value should be kept consistent with `py-version` in `.pylintrc`.
-    entry: vermin -vv --target=3.7- .
+    entry: vermin -vv --target=3.9- .
     language: python
     pass_filenames: false
     additional_dependencies:
