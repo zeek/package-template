@@ -1,0 +1,24 @@
+# A test to verify that plugin/scripts/ is used as the plugin's script
+# directory rather than the top-level scripts/ directory.
+#
+# Regression test for #35.
+#
+# @TEST-REQUIRES: make --version
+# @TEST-REQUIRES: cmake --help | grep -q '^* Unix Makefiles'
+#
+# @TEST-EXEC: bash %INPUT
+#
+# @TEST-EXEC: cd test && ./configure 1>&2
+# @TEST-EXEC: make -C test/build/ -j`nproc` 1>&2
+# @TEST-EXEC: echo "=== without test/scripts" >>output
+# @TEST-EXEC: ZEEK_PLUGIN_PATH=./test/build zeek </dev/null >>output
+# @TEST-EXEC: echo "=== with test/scripts" >>output
+# @TEST-EXEC: ZEEK_PLUGIN_PATH=./test/build zeek ./test/scripts >>output
+# @TEST-EXEC: btest-diff output
+
+${SCRIPTS}/zkg create --packagedir=test --features plugin --user-var name=Name --user-var namespace=Namespace
+
+echo 'event zeek_init() &priority=40 { print "plugin/scripts/__load__.zeek"; }' >> test/plugin/scripts/__load__.zeek
+echo 'event zeek_init() &priority=30 { print "plugin/scripts/__preload__.zeek"; }' >> test/plugin/scripts/__preload__.zeek
+echo 'event zeek_init() &priority=20 { print "scripts/__load__.zeek"; }' >> test/scripts/__load__.zeek
+echo 'event zeek_init() &priority=10 { print "scripts/main.zeek"; }' >> test/scripts/main.zeek
