@@ -10,7 +10,7 @@ repos:
   - id: check-added-large-files
 
 - repo: https://github.com/maxwinterstein/shfmt-py
-  rev: v3.7.0.1
+  rev: v3.11.0.2
   hooks:
   - id: shfmt
     args: [-w, -i, '4', -ci]
@@ -27,7 +27,7 @@ repos:
     args: [--autofix, --indent, '2']
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.9.2
+  rev: v0.11.8
   hooks:
   - id: ruff-format
   - id: ruff
@@ -44,6 +44,6 @@ repos:
     - btest
 
 - repo: https://github.com/crate-ci/typos
-  rev: v1.29.4
+  rev: v1.31.2
   hooks:
   - id: typos
