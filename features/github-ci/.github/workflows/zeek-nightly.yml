@@ -12,7 +12,7 @@ jobs:
       with:
         pkg: ${{ github.server_url }}/${{ github.repository }}
         zeek_version: zeek-nightly
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: zkg-logs
