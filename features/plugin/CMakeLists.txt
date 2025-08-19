@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
 
 project(ZeekPlugin@NAME@)
 
+include(cmake/bootstrap.cmake)
+
 # Establish version numbers in config.h
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" VERSION LIMIT_COUNT 1)
 

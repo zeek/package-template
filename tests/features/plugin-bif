@@ -1,7 +1,7 @@
 # A test to verify that BiF compilation succeeds in a plugin.
 #
 # @TEST-EXEC: bash %INPUT
-# @TEST-EXEC: cd test && ./configure 1>&2
+# @TEST-EXEC: cd test && cmake -B build 1>&2
 # @TEST-EXEC: cd test/build && cmake --build . --verbose 1>&2
 # @TEST-EXEC: btest -djc test/testing/btest.cfg
 

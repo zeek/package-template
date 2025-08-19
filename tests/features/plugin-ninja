@@ -4,6 +4,6 @@
 # @TEST-REQUIRES: cmake --help | grep -q Ninja
 #
 # @TEST-EXEC: ${SCRIPTS}/zkg create --packagedir=test --features plugin --user-var name=Name --user-var namespace=Namespace
-# @TEST-EXEC: cd test && CMAKE_GENERATOR=Ninja ./configure 1>&2
+# @TEST-EXEC: cd test && CMAKE_GENERATOR=Ninja cmake -B build 1>&2
 # @TEST-EXEC: cd test/build && cmake --build . --verbose 1>&2
 # @TEST-EXEC: btest -djc test/testing/btest.cfg
