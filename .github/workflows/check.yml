@@ -71,7 +71,7 @@ jobs:
     - name: Run BTest suite
       run: |
         btest -djc tests/btest.cfg --xml=btest-results.xml
-    - uses: mikepenz/action-junit-report@v5
+    - uses: mikepenz/action-junit-report@v6
       if: always() # Always run even if any previous step fails.
       with:
         report_paths: '**/btest-results.xml'
