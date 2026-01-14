@@ -104,10 +104,6 @@ class License(zeekpkg.template.Feature):
         return ["author", "license"]
 
     def validate(self, tmpl):
-        if not tmpl.lookup_param("author"):
-            raise zeekpkg.template.InputError("license requires an author")
-        if not tmpl.lookup_param("license"):
-            raise zeekpkg.template.InputError("license requires a license type")
         if tmpl.lookup_param("license") not in self.license_keys(tmpl):
             types_str = ", ".join(self.license_keys(tmpl))
             raise zeekpkg.template.InputError(
