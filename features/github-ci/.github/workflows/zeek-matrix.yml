@@ -8,6 +8,8 @@ jobs:
   test:
     name: test-${{ matrix.zeekver }}
     runs-on: ubuntu-latest
+    # Don't run twice when pushing to PRs
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     strategy:
       fail-fast: false
       matrix:
