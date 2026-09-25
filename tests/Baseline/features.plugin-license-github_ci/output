@@ -12,6 +12,7 @@ test/COPYING
 test/plugin
 test/plugin.cmake
 test/plugin/.gitignore
+test/plugin/CMakeLists.txt
 test/plugin/scripts
 test/plugin/scripts/types.zeek
 test/plugin/scripts/__load__.zeek
