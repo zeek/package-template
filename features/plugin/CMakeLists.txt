@@ -20,8 +20,14 @@ set(BRO_PLUGIN_BASE "${CMAKE_CURRENT_SOURCE_DIR}/plugin")
 
 include(ZeekPlugin)
 
-file(GLOB cc_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "plugin/src/*.cc")
-file(GLOB bif_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "plugin/src/*.bif")
+file(GLOB cc_files
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+  "plugin/src/*.cc"
+  CONFIGURE_DEPENDS)
+file(GLOB bif_files
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+  "plugin/src/*.bif"
+  CONFIGURE_DEPENDS)
 
 zeek_add_plugin(
   @NS@
