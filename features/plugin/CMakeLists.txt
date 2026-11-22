@@ -1,49 +1,45 @@
-# This file is maintained by zkg. Do not edit.
-# Put required additional cmake functionality into plugin.cmake.
 cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
 
-project(ZeekPlugin@NAME@)
+find_program(ZEEK_CONFIG zeek-config REQUIRED)
 
-# Establish version numbers in config.h
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" VERSION LIMIT_COUNT 1)
+execute_process(
+  COMMAND ${ZEEK_CONFIG} --cmake_dir
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE zeek_cmake_dir COMMAND_ERROR_IS_FATAL ANY)
 
-string(REGEX REPLACE "[.-]" " " version_numbers ${VERSION})
-separate_arguments(version_numbers)
-list(GET version_numbers 0 VERSION_MAJOR)
-list(GET version_numbers 1 VERSION_MINOR)
-list(GET version_numbers 2 VERSION_PATCH)
+list(PREPEND CMAKE_MODULE_PATH "${zeek_cmake_dir}")
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin/src/config.h.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/config.h" @ONLY)
+project(
+  ZeekPlugin@NAME@
+  VERSION 0.1.0
+  LANGUAGES CXX)
 
-# Process any package-specific customizations
-include(plugin.cmake OPTIONAL)
+configure_file("plugin/src/config.h.in" "config.h" @ONLY)
 
-# Our plugin source and scripts are in a subdirectory
 set(BRO_PLUGIN_BASE "${CMAKE_CURRENT_SOURCE_DIR}/plugin")
-
-# Workaround to make header files in plugin sources available to BiFs.
-include_directories("${BRO_PLUGIN_BASE}/src")
 
 include(ZeekPlugin)
 
-zeek_plugin_begin(@NS@ @NAME@)
+file(GLOB cc_files
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+  CONFIGURE_DEPENDS
+  "plugin/src/*.cc")
 
-file(GLOB cc_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "plugin/src/*.cc")
-foreach(file ${cc_files})
-    zeek_plugin_cc(${file})
-endforeach ()
+file(GLOB bif_files
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+  CONFIGURE_DEPENDS
+  "plugin/src/*.bif")
 
-file(GLOB bif_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "plugin/src/*.bif")
-foreach(file ${bif_files})
-    zeek_plugin_bif(${file})
-endforeach ()
+zeek_add_plugin(
+  @NS@
+  @NAME@
+  SOURCES
+  ${cc_files}
+  BIFS
+  ${bif_files}
+  DIST_FILES
+  README
+  COPYING)
 
-zeek_plugin_dist_files(README CHANGES COPYING VERSION)
-zeek_plugin_end()
-
-if ("${PROJECT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    # Allows building rpm/deb packages via "make package" in build dir.
-    include(ConfigurePackaging)
-    ConfigurePackaging(${VERSION})
-endif ()
+target_include_directories(@NS@_@NAME@
+                           PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/plugin/src)

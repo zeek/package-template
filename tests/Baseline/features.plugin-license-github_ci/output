@@ -6,11 +6,8 @@ test/.github/workflows/zeek-matrix.yml
 test/.github/workflows/zeek-nightly.yml
 test/.gitignore
 test/CMakeLists.txt
-test/configure
-test/configure.plugin
 test/COPYING
 test/plugin
-test/plugin.cmake
 test/plugin/.gitignore
 test/plugin/scripts
 test/plugin/scripts/types.zeek
