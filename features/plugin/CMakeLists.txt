@@ -22,12 +22,13 @@ include(ZeekPlugin)
 
 file(GLOB cc_files
   RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-  "plugin/src/*.cc"
-  CONFIGURE_DEPENDS)
+  CONFIGURE_DEPENDS
+  "plugin/src/*.cc")
+
 file(GLOB bif_files
   RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-  "plugin/src/*.bif"
-  CONFIGURE_DEPENDS)
+  CONFIGURE_DEPENDS
+  "plugin/src/*.bif")
 
 zeek_add_plugin(
   @NS@
